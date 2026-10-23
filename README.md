@@ -70,3 +70,10 @@ PLAN.md: 28-step roadmap and milestone tracking.
 REPORT.md: Architectural decisions and technical trade-offs.
 DEBUG-LOG.md: Issue tracking, bug fixes, and React 19 type migrations.
 COMPATIBILITY.md: Browser and device compatibility audit.
+
+## 📌 Progress Update (Sprint 1 - Layout & Core Architecture)
+- **Theme Management**: Implemented `ThemeContext` with dark/light mode toggling, HTML class sync, and localStorage persistence.
+- **Header & Navigation**: Built responsive header with custom Logo, theme toggle switch, cart indicator, and authentication state navigation.
+- **Sidebar & Categories**: Integrated full-height categories sidebar with deep-linking query params (`?category=...`).
+- **Layout Architecture**: Unified responsive layout using React Router `<Outlet />`, resolving margin offsets and styling consistency.
+- **TypeScript Optimization**: Strict type checking with clean imports (`react-router`) and comprehensive English documentation.
