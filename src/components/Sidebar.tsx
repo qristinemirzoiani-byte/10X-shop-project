@@ -35,7 +35,6 @@
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Active category derived from URL query params (default to 'all' if omitted)
     const activeCategoryId = searchParams.get('category') || 'all';
 
     const handleCategoryClick = (categoryId: string) => {
@@ -44,17 +43,15 @@
         return;
         }
 
-        // Sync selected category with URL query parameters
         const nextParams = new URLSearchParams(searchParams);
         if (categoryId === 'all') {
         nextParams.delete('category');
         } else {
         nextParams.set('category', categoryId);
-        nextParams.delete('q'); // Clear search query when filtering by category
+        nextParams.delete('q');
         }
         nextParams.set('page', '1');
 
-        // If navigated outside catalog route, redirect to root with search params
         if (location.pathname !== '/') {
         navigate(`/?${nextParams.toString()}`);
         } else {
@@ -66,18 +63,15 @@
         <aside
         className={`w-64 shrink-0 flex flex-col bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-colors p-4 ${className}`}
         >
-        {/* Sidebar Section Title */}
         <div className="mb-4">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-2.5">
             Categories
             </h2>
         </div>
 
-        {/* Categories Navigation List */}
         <nav className="flex-1 space-y-1.5" aria-label="Sidebar categories">
             {CATEGORIES.map((cat) => {
             const Icon = cat.icon;
-            // Match active state by stable unique ID instead of array index
             const isActive = activeCategoryId === cat.id;
 
             return (

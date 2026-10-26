@@ -3,6 +3,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { Layout } from './components/Layout';
 import LoginPage from './pages/LoginPage';
+import { ToastProvider } from './contexts/ToastContext';
+import OrdersPage from './pages/OrdersPage';
 
 // Catalog view (sidebar is already handled by Layout)
 function CatalogView() {
@@ -35,16 +37,22 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
+          <ToastProvider>
           <Routes>
             {/* Main Layout routes with Header & Sidebar */}
             <Route path="/" element={<Layout />}>
               <Route index element={<CatalogView />} />
               <Route path="cart" element={<CartView />} />
+              <Route path="orders" element={<OrdersPage />} />
+              
+              {/* <Route path="/profile" element={<ProfilePage />} /> */}
             </Route>
+            
 
             {/* Standalone Login route */}
             <Route path="/login" element={<LoginPage />} />
           </Routes>
+          </ToastProvider>
         </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>

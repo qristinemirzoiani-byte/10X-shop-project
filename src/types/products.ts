@@ -34,3 +34,20 @@
     name: string;               // category names: 'Smartphones')
     url: string;
     }
+
+    // search, category, sort, page, limit (P2 ① Search, P2 ② Category Filter, P2 ③ Sorting)
+    export interface CatalogParams {
+    q?: string;
+    category?: string;
+    sort?: string;
+    page?: number;
+    limit?: number;
+}
+
+// PRD values for sorting options
+    export type SortOption =
+    | ''
+    | 'price-asc'
+    | 'price-desc'
+    | 'rating-desc'
+    | 'title-asc';
