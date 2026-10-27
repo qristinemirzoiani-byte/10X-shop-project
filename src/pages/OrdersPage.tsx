@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, Navigate } from 'react-router';
 import { Package, Clock, Truck, CheckCircle2, ShoppingBag, PlusCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { OrderCard } from '../components/OrderCard'; 
+import { OrderCard } from '../orders/OrderCard'; 
 
 export interface OrderItem {
     id: number;

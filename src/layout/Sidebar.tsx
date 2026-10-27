@@ -9,13 +9,7 @@
     ShoppingBasket,
     } from 'lucide-react';
 
-    export interface CategoryItem {
-    id: string;
-    name: string;
-    icon: React.ComponentType<{ className?: string }>;
-    }
-
-    export const CATEGORIES: CategoryItem[] = [
+    export const CATEGORIES = [
     { id: 'all', name: 'All Products', icon: Sparkles },
     { id: 'laptops', name: 'Laptops & Tech', icon: Laptop },
     { id: 'smartphones', name: 'Smartphones', icon: Smartphone },
@@ -25,12 +19,7 @@
     { id: 'groceries', name: 'Groceries', icon: ShoppingBasket },
     ];
 
-    interface SidebarProps {
-    className?: string;
-    onSelectCategory?: (categoryId: string) => void;
-    }
-
-    export function Sidebar({ className = '', onSelectCategory }: SidebarProps) {
+    export function Sidebar() {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -38,11 +27,6 @@
     const activeCategoryId = searchParams.get('category') || 'all';
 
     const handleCategoryClick = (categoryId: string) => {
-        if (onSelectCategory) {
-        onSelectCategory(categoryId);
-        return;
-        }
-
         const nextParams = new URLSearchParams(searchParams);
         if (categoryId === 'all') {
         nextParams.delete('category');
@@ -60,16 +44,14 @@
     };
 
     return (
-        <aside
-        className={`w-64 shrink-0 flex flex-col bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-colors p-4 ${className}`}
-        >
-        <div className="mb-4">
+        <aside className="w-64 shrink-0 h-full bg-white/70 dark:bg-[#0B0F19]/70 backdrop-blur-xl border-r border-slate-200/80 dark:border-pink-500/15 p-4 flex flex-col overflow-y-auto no-scrollbar">
+        <div className="mb-3">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-2.5">
             Categories
             </h2>
         </div>
 
-        <nav className="flex-1 space-y-1.5" aria-label="Sidebar categories">
+        <nav className="space-y-1 flex-1" aria-label="Sidebar categories">
             {CATEGORIES.map((cat) => {
             const Icon = cat.icon;
             const isActive = activeCategoryId === cat.id;
@@ -81,8 +63,8 @@
                 onClick={() => handleCategoryClick(cat.id)}
                 className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition text-left cursor-pointer ${
                     isActive
-                    ? 'bg-pink-500/15 dark:bg-pink-500/20 text-pink-700 dark:text-white font-semibold border border-pink-500/30 shadow-sm'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
+                    ? 'bg-pink-500/15 dark:bg-pink-500/20 text-pink-700 dark:text-white font-semibold border border-pink-500/30 shadow-xs'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-slate-800/40'
                 }`}
                 >
                 <Icon

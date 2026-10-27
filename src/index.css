@@ -1,3 +1,56 @@
-@import "tailwindcss";
+    @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
+    @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));
+
+    @layer base {
+    html, body {
+        overflow-x: hidden;
+        max-width: 100%;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    html::-webkit-scrollbar, body::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+    }
+
+    /* Light Mode - ნაზი ვარდისფერი ბექგრაუნდი */
+    body {
+        @apply antialiased text-slate-900 bg-[#fff0f5] transition-colors duration-200;
+    }
+    
+    /* Dark Mode - ელეგანტური მუქი ბექგრაუნდი */
+    [data-theme="dark"] body,
+    .dark body {
+        @apply text-slate-100 bg-[#0B0F19];
+    }
+    }
+
+    /* სქროლის დამალვა ისე, რომ სქროლვა მაინც მუშაობდეს */
+    .no-scrollbar::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    }
+
+    .no-scrollbar {
+    -ms-overflow-style: none !important; /* IE & Edge */
+    scrollbar-width: none !important;    /* Firefox */
+    }
+
+
+    .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.2);
+    border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(236, 72, 153, 0.5);
+    }
