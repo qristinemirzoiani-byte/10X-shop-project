@@ -12,7 +12,7 @@ const CartPage = lazy(() => import('../pages/CartPage'));
 const CheckoutPage = lazy(() => import('../pages/CheckoutPage'));
 const OrdersPage = lazy(() => import('../pages/OrdersPage'));
 const OrderDetailsPage = lazy(() => import('../pages/OrderDetailsPage'));
-const ProfilePage = lazy(() => import('../pages/ProfilePage'));
+const ProfilePage = lazy(() => import('../profile/ProfilePage'));
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
