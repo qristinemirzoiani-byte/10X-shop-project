@@ -1,6 +1,7 @@
+    // components/product/Pagination.tsx
     import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-    interface PaginationProps {
+    export interface PaginationProps {
     page: number;
     totalPages: number;
     onChange: (page: number) => void;
@@ -9,44 +10,58 @@
     export function Pagination({ page, totalPages, onChange }: PaginationProps) {
     if (totalPages <= 1) return null;
 
+    // Generate page numbers with ellipsis
     const getPageNumbers = () => {
         const pages: (number | string)[] = [];
+        const maxVisible = 5;
 
-        if (totalPages <= 5) {
-        for (let i = 1; i <= totalPages; i++) pages.push(i);
+        if (totalPages <= maxVisible) {
+        for (let i = 1; i <= totalPages; i++) {
+            pages.push(i);
+        }
         } else {
         pages.push(1);
-        if (page > 3) pages.push('...');
+        if (page > 3) {
+            pages.push('...');
+        }
 
         const start = Math.max(2, page - 1);
         const end = Math.min(totalPages - 1, page + 1);
-        for (let i = start; i <= end; i++) pages.push(i);
 
-        if (page < totalPages - 2) pages.push('...');
+        for (let i = start; i <= end; i++) {
+            pages.push(i);
+        }
+
+        if (page < totalPages - 2) {
+            pages.push('...');
+        }
         pages.push(totalPages);
         }
         return pages;
     };
 
     return (
-        <div className="flex items-center justify-center gap-2 pt-8">
-        {/* წინა გვერდის ისარი - შუშის ეფექტით */}
+        <nav className="flex items-center justify-center gap-1.5 mt-8" aria-label="Pagination">
+        {/* Previous button */}
         <button
             type="button"
             disabled={page <= 1}
             onClick={() => onChange(page - 1)}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-pink-500/5 dark:bg-pink-500/10 border border-pink-500/15 dark:border-pink-500/20 backdrop-blur-md text-pink-400 hover:bg-pink-500/15 dark:hover:bg-pink-500/25 hover:text-pink-300 disabled:opacity-20 disabled:cursor-not-allowed transition cursor-pointer"
-            aria-label="Previous Page"
+            className="inline-flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+            aria-label="Previous page"
         >
             <ChevronLeft className="w-4 h-4" />
         </button>
 
-        {/* ციფრები და სამი წერტილი */}
+        {/* Numbered buttons */}
         {getPageNumbers().map((item, index) => {
             if (item === '...') {
             return (
-                <span key={`dots-${index}`} className="px-1.5 text-xs font-bold text-pink-400/50 select-none">
-                •••
+                <span
+                key={`ellipsis-${index}`}
+                className="w-9 h-9 flex items-center justify-center text-slate-400 text-sm"
+                >
+                …
                 </span>
             );
             }
@@ -59,10 +74,11 @@
                 key={pageNum}
                 type="button"
                 onClick={() => onChange(pageNum)}
-                className={`w-9 h-9 rounded-xl text-xs font-bold backdrop-blur-md transition-all cursor-pointer ${
+                aria-current={isActive ? 'page' : undefined}
+                className={`w-9 h-9 rounded-xl text-sm font-semibold transition ${
                 isActive
-                    ? 'bg-pink-500/25 dark:bg-pink-500/30 border border-pink-500/50 text-white font-extrabold shadow-lg shadow-pink-500/20 scale-105'
-                    : 'bg-pink-500/5 dark:bg-pink-500/10 border border-pink-500/15 dark:border-pink-500/20 text-slate-700 dark:text-slate-300 hover:bg-pink-500/15 dark:hover:bg-pink-500/20 hover:border-pink-500/30 hover:text-pink-600 dark:hover:text-pink-300'
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
+                    : 'border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
             >
                 {pageNum}
@@ -70,16 +86,16 @@
             );
         })}
 
-        {/* შემდეგი გვერდის ისარი - შუშის ეფექტით */}
+        {/* Next button */}
         <button
             type="button"
             disabled={page >= totalPages}
             onClick={() => onChange(page + 1)}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-pink-500/5 dark:bg-pink-500/10 border border-pink-500/15 dark:border-pink-500/20 backdrop-blur-md text-pink-400 hover:bg-pink-500/15 dark:hover:bg-pink-500/25 hover:text-pink-300 disabled:opacity-20 disabled:cursor-not-allowed transition cursor-pointer"
-            aria-label="Next Page"
+            className="inline-flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+            aria-label="Next page"
         >
             <ChevronRight className="w-4 h-4" />
         </button>
-        </div>
+        </nav>
     );
 }

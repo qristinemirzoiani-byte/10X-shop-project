@@ -1,0 +1,13 @@
+export type AsyncState<T> =
+    | { status: 'idle' }
+    | { status: 'loading' }
+    | { status: 'success'; data: T }
+    | { status: 'error'; message: string };
+
+    export interface CatalogParams {
+    q?: string;
+    category?: string;
+    sort?: string;
+    page?: number;
+    limit?: number;
+}
