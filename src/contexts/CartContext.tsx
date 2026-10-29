@@ -1,141 +1,134 @@
-    import React, { createContext, useContext, useState, useEffect } from 'react';
-    import type { Product } from '../types/products';
-    import { useToast } from './ToastContext';
 
-    export interface CartItem {
-    product: Product;
-    quantity: number;
-    }
+import React, { createContext, useContext, useReducer, useEffect, useMemo } from 'react';
+import { cartReducer } from './reducer';
+import type { CartState } from '../types/cart';
+import type { Product } from '../types/products';
+import { Cart } from '../types/cart';
+import { STORAGE_KEYS } from '../models/StorageService';
+import { useToast } from './ToastContext';
 
-    interface CartContextType {
-    items: CartItem[];
-    cart: {
-        items: CartItem[];
-        itemCount: number;
-        total: number;
-    };
-    totalItems: number;
-    totalPrice: number;
-    addItem: (product: Product, quantity?: number) => void;
+interface CartContextType {
+    state: CartState;
+    cart: Cart;
+    addItem: (product: Product, qty?: number) => boolean;
+    setQuantity: (productId: number, qty: number) => void;
     removeItem: (productId: number) => void;
-    updateQuantity: (productId: number, quantity: number) => void;
     clearCart: () => void;
+    applyPromo: (code: string) => boolean;
+    removePromo: () => void;
+}
+
+const initialCartState: CartState = {
+    items: [],
+    promoCode: null,
+};
+
+function initCartState(): CartState {
+    try {
+    const raw = localStorage.getItem(STORAGE_KEYS.cart);
+    if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed?.items)) {
+        return parsed as CartState;
     }
+    }
+} catch (err) {
+    console.warn('Failed to parse cart from localStorage:', err);
+    }
+    return initialCartState;
+}
 
-    const CartContext = createContext<CartContextType | undefined>(undefined);
+const CartContext = createContext<CartContextType | undefined>(undefined);
 
-    export function CartProvider({ children }: { children: React.ReactNode }) {
-    const { showToast } = useToast();
+export function CartProvider({ children }: { children: React.ReactNode }) {
+const [state, dispatch] = useReducer(cartReducer, initialCartState, initCartState);
+const { showToast } = useToast();
 
-    // 1. cart state initialization with localStorage fallback
-    const [items, setItems] = useState<CartItem[]>(() => {
-        try {
-        const saved = localStorage.getItem('shop_cart');
-        return saved ? JSON.parse(saved) : [];
-        } catch {
-        return [];
-        }
-    });
+useEffect(() => {
+    try {
+            localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(state));
+        } catch (err) {
+            console.warn('Failed to save cart to localStorage:', err);
+    }
+}, [state]);
 
-    // 2. save to localStorage whenever items change
-    useEffect(() => {
-        try {
-        localStorage.setItem('shop_cart', JSON.stringify(items));
-        } catch (e) {
-        console.error('Failed to save cart to localStorage', e);
-        }
-    }, [items]);
+const cart = useMemo(() => new Cart(state.items, state.promoCode), [state.items, state.promoCode]);
 
-    // 3. item adding logic with stock check and toast notifications
-    const addItem = (product: Product, quantity: number = 1) => {
-        if (product.stock <= 0) {
+const addItem = (product: Product, qty: number = 1): boolean => {
+    if (product.stock <= 0) {
         showToast('This product is out of stock', 'error');
+        return false;
+    }
+
+    const currentItem = state.items.find((i) => i.productId === product.id);
+    const currentQty = currentItem ? currentItem.quantity : 0;
+
+    if (currentQty + qty > product.stock) {
+        showToast(`Cannot add more than available stock (${product.stock})`, 'error');
+        return false;
+    }
+
+    dispatch({ type: 'ADD_ITEM', product, qty });
+    showToast('Added to cart ✓', 'success');
+    return true;
+};
+
+const setQuantity = (productId: number, qty: number) => {
+    const currentItem = state.items.find((i) => i.productId === productId);
+    if (currentItem && qty > currentItem.stock) {
+        showToast(`Cannot exceed available stock (${currentItem.stock})`, 'error');
+        dispatch({ type: 'SET_QTY', productId, qty: currentItem.stock });
         return;
+    }
+    dispatch({ type: 'SET_QTY', productId, qty });
+};
+
+const removeItem = (productId: number) => {
+    dispatch({ type: 'REMOVE_ITEM', productId });
+    showToast('Removed from cart', 'info');
+};
+
+const clearCart = () => {
+    dispatch({ type: 'CLEAR' });
+};
+
+const applyPromo = (code: string): boolean => {
+    const clean = code.trim().toUpperCase();
+    if (clean === '10X10') {
+        dispatch({ type: 'APPLY_PROMO', code: clean });
+        showToast('Promo code 10X10 applied! (10% off)', 'success');
+        return true;
+        } else {
+        showToast('Invalid promo code', 'error');
+        return false;
         }
+};
 
-        setItems((prevItems) => {
-        const existing = prevItems.find((item) => item.product.id === product.id);
+const removePromo = () => {
+    dispatch({ type: 'REMOVE_PROMO' });
+    showToast('Promo code removed', 'info');
+};
 
-        if (existing) {
-            // if the item already exists, check if adding more exceeds stock
-            const newQty = existing.quantity + quantity;
-            if (newQty > product.stock) {
-            showToast(`Cannot add more than available stock (${product.stock})`, 'error');
-            return prevItems;
-            }
-            showToast('Added to cart ✓', 'success');
-            return prevItems.map((item) =>
-            item.product.id === product.id ? { ...item, quantity: newQty } : item
-            );
-        }
-
-        // new item, check stock
-        showToast('Added to cart ✓', 'success');
-        return [...prevItems, { product, quantity }];
-        });
-    };
-
-    // 4. delete an item from the cart 
-    const removeItem = (productId: number) => {
-        setItems((prev) => prev.filter((item) => item.product.id !== productId));
-        showToast('Removed from cart', 'info');
-    };
-
-    // 5. change quantity (+/-)
-    const updateQuantity = (productId: number, quantity: number) => {
-        if (quantity <= 0) {
-        removeItem(productId);
-        return;
-        }
-        setItems((prev) =>
-        prev.map((item) =>
-            item.product.id === productId ? { ...item, quantity } : item
-        )
-        );
-    };
-
-    // 6. clear the entire cart
-    const clearCart = () => {
-        setItems([]);
-    };
-
-    // having total items and total price for convenience
-    const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-    const totalPrice = items.reduce((sum, item) => {
-        const finalPrice = item.product.discountPercentage > 0
-        ? item.product.price * (1 - item.product.discountPercentage / 100)
-        : item.product.price;
-        return sum + finalPrice * item.quantity;
-    }, 0);
-
-    const cart = {
-        items,
-        itemCount: totalItems,
-        total: totalPrice,
-    };
-
-    return (
-        <CartContext.Provider
+return (
+    <CartContext.Provider
         value={{
-            items,
-            cart,
-            totalItems,
-            totalPrice,
-            addItem,
-            removeItem,
-            updateQuantity,
-            clearCart,
+        state,
+        cart,
+        addItem,
+        setQuantity,
+        removeItem,
+        clearCart,
+        applyPromo,
+        removePromo,
         }}
-        >
+    >
         {children}
-        </CartContext.Provider>
+    </CartContext.Provider>
     );
-    }
+}
 
-    export function useCart() {
-    const context = useContext(CartContext);
-    if (!context) {
-        throw new Error('useCart must be used within a CartProvider');
-    }
-    return context;
+export function useCart() {
+    const ctx = useContext(CartContext);
+    if (!ctx) throw new Error('useCart must be used within CartProvider');
+    return ctx;
 }
