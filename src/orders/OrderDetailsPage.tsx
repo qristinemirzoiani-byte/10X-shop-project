@@ -3,21 +3,19 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
 import {
     ArrowLeft,
-    PackageCheck,
     CheckCircle2,
     Clock,
     Truck,
     RotateCcw,
     MapPin,
-    CreditCard,
     } from 'lucide-react';
-    import { Order, OrderStatus } from '../types/order';
+    import type { Order, OrderStatus } from '../types/order';
     import { OrderModel } from '../models/Order';
     import { STORAGE_KEYS } from '../models/StorageService';
     import { formatPrice, formatDate, discountedPrice } from '../utils/format';
     import { useCart } from '../contexts/CartContext';
     import { useToast } from '../contexts/ToastContext';
-    import NotFoundPage from './NotFoundPage';
+    import NotFoundPage from '../pages/NotFoundPage';
 
     export default function OrderDetailsPage() {
     const { id } = useParams<{ id: string }>();

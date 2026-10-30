@@ -2,23 +2,9 @@ import { useState, useEffect } from 'react';
 import { Link, Navigate } from 'react-router';
 import { Package, Clock, Truck, CheckCircle2, ShoppingBag, PlusCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { OrderCard } from '../orders/OrderCard'; 
-
-export interface OrderItem {
-    id: number;
-    title: string;
-    price: number;
-    quantity: number;
-    thumbnail: string;
-}
-
-export interface Order {
-    id: number;
-    number: string;
-    items: OrderItem[];
-    total: number;
-    placedAt: string;
-}
+import { OrderCard } from '../orders/OrderCard';
+import type { Order } from '../types/order';
+import { STORAGE_KEYS } from '../models/StorageService';
 
 export default function OrdersPage() {
     const { user } = useAuth();
@@ -32,7 +18,7 @@ export default function OrdersPage() {
 
     const loadOrders = () => {
         try {
-            const stored = localStorage.getItem('shop_orders');
+            const stored = localStorage.getItem(STORAGE_KEYS.orders);
             if (stored) {
                 setOrders(JSON.parse(stored));
             }
@@ -45,7 +31,7 @@ export default function OrdersPage() {
         loadOrders();
         const interval = setInterval(() => {
             setCurrentTime(new Date());
-        }, 30000);
+        }, 15000);
 
         return () => clearInterval(interval);
     }, []);
@@ -80,20 +66,35 @@ export default function OrdersPage() {
             id: Date.now(),
             number: `10X-${String(orders.length + 1).padStart(5, '0')}`,
             placedAt: new Date().toISOString(),
+            subtotal: 129.99,
+            discount: 0,
+            shippingCost: 0,
             total: 129.99,
+            shipping: {
+                fullName: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username || 'Demo User',
+                email: user.email || 'demo@example.com',
+                phone: user.phone || '+995 555 12 34 56',
+                address: 'Rustaveli Ave 12',
+                city: 'Tbilisi',
+                country: 'Georgia',
+            },
             items: [
                 {
-                    id: 1,
+                    productId: 1,
                     title: 'Wireless Noise-Canceling Headphones',
                     price: 99.99,
+                    discountPercentage: 0,
                     quantity: 1,
+                    stock: 10,
                     thumbnail: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=150&q=80',
                 },
                 {
-                    id: 2,
+                    productId: 2,
                     title: 'Minimalist Leather Watch',
                     price: 30.00,
+                    discountPercentage: 0,
                     quantity: 1,
+                    stock: 5,
                     thumbnail: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=150&q=80',
                 },
             ],
@@ -101,12 +102,11 @@ export default function OrdersPage() {
 
         const updated = [mockOrder, ...orders];
         setOrders(updated);
-        localStorage.setItem('shop_orders', JSON.stringify(updated));
+        localStorage.setItem(STORAGE_KEYS.orders, JSON.stringify(updated));
     };
 
     return (
         <div className="max-w-4xl mx-auto space-y-6 py-4">
-            {/* Page Header */}
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-5">
                 <div>
                     <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -127,7 +127,6 @@ export default function OrdersPage() {
                 </button>
             </div>
 
-            {/* Empty State */}
             {orders.length === 0 ? (
                 <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-12 text-center space-y-4 shadow-sm">
                     <div className="w-16 h-16 rounded-2xl bg-pink-500/10 text-pink-500 mx-auto flex items-center justify-center">
@@ -142,7 +141,7 @@ export default function OrdersPage() {
                     <div className="pt-2">
                         <Link
                             to="/"
-                            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-linear-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-bold text-sm shadow-md transition"
+                            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-linear-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-bold text-sm shadow-md transition cursor-pointer"
                         >
                             <ShoppingBag className="w-4 h-4" />
                             <span>Browse Catalog</span>
@@ -150,7 +149,6 @@ export default function OrdersPage() {
                     </div>
                 </div>
             ) : (
-                /* Orders List */
                 <div className="space-y-4">
                     {orders.map((order) => (
                         <OrderCard 
@@ -164,3 +162,5 @@ export default function OrdersPage() {
         </div>
     );
 }
+
+export { OrdersPage };
