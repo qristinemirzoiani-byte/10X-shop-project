@@ -1,19 +1,23 @@
-import { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate, useLocation } from 'react-router';
-import { Search, X } from 'lucide-react';
+    import { useState, useEffect } from 'react';
+    import { useSearchParams, useNavigate, useLocation } from 'react-router';
+    import { Search, X } from 'lucide-react';
 
-export function SearchBar() {
+    export function SearchBar() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const location = useLocation();
 
     const queryInUrl = searchParams.get('q') || '';
     const [term, setTerm] = useState(queryInUrl);
+    const [prevQuery, setPrevQuery] = useState(queryInUrl);
 
-    useEffect(() => {
+    // Sync with URL during render without synchronous setState in useEffect
+    if (prevQuery !== queryInUrl) {
+        setPrevQuery(queryInUrl);
         setTerm(queryInUrl);
-    }, [queryInUrl]);
+    }
 
+    // 400ms Debounce
     useEffect(() => {
         const timer = setTimeout(() => {
         const trimmed = term.trim();

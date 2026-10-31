@@ -1,6 +1,6 @@
 import { useEffect, useState, type SyntheticEvent } from 'react';
-import {  useNavigate, useParams } from 'react-router';
-import { AlertCircle,  Minus, Plus, ShoppingCart, Star } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router';
+import { AlertCircle, Minus, Plus, ShoppingCart, Star } from 'lucide-react';
 import { ApiError } from '../api/ApiError';
 import { fetchProductById, fetchRelatedProducts } from '../api/products.api';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -41,11 +41,6 @@ export default function ProductPage() {
     useEffect(() => {
         const productId = Number(id);
         const controller = new AbortController();
-        setProduct(null);
-        setRelated([]);
-        setError(null);
-        setNotFound(false);
-        setLoading(true);
 
         if (!id || !Number.isInteger(productId) || productId <= 0) {
             setNotFound(true);
@@ -63,12 +58,19 @@ export default function ProductPage() {
                 setReviews([...(result.reviews ?? []), ...(reviewStorage.get()?.[String(productId)] ?? [])]);
                 const recommendations = await fetchRelatedProducts(result.category, result.id, controller.signal);
                 if (!controller.signal.aborted) setRelated(recommendations);
+                setError(null);
+                setNotFound(false);
             } catch (cause) {
                 if (controller.signal.aborted) return;
-                if (cause instanceof ApiError && cause.status === 404) setNotFound(true);
-                else setError(cause instanceof Error ? cause.message : 'Failed to load product.');
+                if (cause instanceof ApiError && cause.status === 404) {
+                    setNotFound(true);
+                } else {
+                    setError(cause instanceof Error ? cause.message : 'Failed to load product.');
+                }
             } finally {
-                if (!controller.signal.aborted) setLoading(false);
+                if (!controller.signal.aborted) {
+                    setLoading(false);
+                }
             }
         }
 
@@ -77,7 +79,7 @@ export default function ProductPage() {
     }, [id, retry]);
 
     const submitReview = (event: SyntheticEvent) => {
-    event.preventDefault();
+        event.preventDefault();
         const text = comment.trim();
         const errors = {
             ...(rating < 1 || rating > 5 ? { rating: 'Choose a rating from 1 to 5.' } : {}),
@@ -111,7 +113,14 @@ export default function ProductPage() {
                 <AlertCircle className="mx-auto mb-4 h-10 w-10 text-rose-500" />
                 <h1 className="text-xl font-bold">Could not load product</h1>
                 <p className="mt-2 text-sm text-slate-500">{error ?? 'The product is unavailable right now.'}</p>
-                <button className="mt-5 rounded-xl bg-indigo-600 px-5 py-2.5 text-white" onClick={() => setRetry((n) => n + 1)}>
+                <button
+                    className="mt-5 rounded-xl bg-indigo-600 px-5 py-2.5 text-white cursor-pointer"
+                    onClick={() => {
+                        setLoading(true);
+                        setError(null);
+                        setRetry((n) => n + 1);
+                    }}
+                >
                     Try again
                 </button>
             </div>
@@ -122,22 +131,38 @@ export default function ProductPage() {
     const price = discountedPrice(product.price, product.discountPercentage);
 
     return (
-        <div className="space-y-10">
-
-            <div className="grid gap-8 md:grid-cols-2">
+        <div className="space-y-8">
+            <div className="grid gap-8 md:grid-cols-2 items-start">
                 <ProductGallery images={images} selectedImage={image || images[0]} onSelectImage={setImage} title={product.title} />
                 <section className="space-y-4">
-                    <p className="text-sm capitalize text-indigo-600">{product.category}{product.brand && ` · ${product.brand}`}</p>
-                    <h1 className="text-3xl font-extrabold">{product.title}</h1>
-                    <p className="flex items-center gap-2 text-sm"><Star className="h-4 w-4 fill-amber-400 text-amber-400" />{product.rating.toFixed(1)} ({reviews.length} reviews)</p>
-                    <p className="text-2xl font-bold">{formatPrice(price)} {product.discountPercentage > 0 && <del className="text-sm text-slate-400">{formatPrice(product.price)}</del>}</p>
-                    <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">{product.description}</p>
-                    <p className="text-sm">{product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}</p>
+                    <p className="text-xs uppercase tracking-wider font-bold text-pink-600 dark:text-pink-400">{product.category}{product.brand && ` · ${product.brand}`}</p>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">{product.title}</h1>
+                    <p className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+                        <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                        {product.rating.toFixed(1)} ({reviews.length} reviews)
+                    </p>
+                    <p className="text-2xl font-black text-slate-900 dark:text-white">
+                        {formatPrice(price)} {product.discountPercentage > 0 && <del className="text-sm text-slate-400 font-normal ml-2">{formatPrice(product.price)}</del>}
+                    </p>
+                    <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">{product.description}</p>
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                        {product.stock > 0 ? (
+                            <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓ {product.stock} in stock</span>
+                        ) : (
+                            <span className="text-rose-500 font-bold">Out of stock</span>
+                        )}
+                    </p>
 
-                    <div className="flex items-center gap-3">
-                        <button aria-label="Decrease quantity" disabled={quantity <= 1} onClick={() => setQuantity((n) => Math.max(1, n - 1))}><Minus className="h-4 w-4" /></button>
-                        <span>{quantity}</span>
-                        <button aria-label="Increase quantity" disabled={quantity >= product.stock} onClick={() => setQuantity((n) => Math.min(product.stock, n + 1))}><Plus className="h-4 w-4" /></button>
+                    <div className="flex flex-wrap items-center gap-3 pt-3">
+                        <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 p-1">
+                            <button aria-label="Decrease quantity" disabled={quantity <= 1} onClick={() => setQuantity((n) => Math.max(1, n - 1))} className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-slate-800 disabled:opacity-30 transition cursor-pointer">
+                                <Minus className="h-4 w-4" />
+                            </button>
+                            <span className="w-10 text-center font-bold text-slate-900 dark:text-white text-sm">{quantity}</span>
+                            <button aria-label="Increase quantity" disabled={quantity >= product.stock} onClick={() => setQuantity((n) => Math.min(product.stock, n + 1))} className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-slate-800 disabled:opacity-30 transition cursor-pointer">
+                                <Plus className="h-4 w-4" />
+                            </button>
+                        </div>
                         <button
                             disabled={!product.stock}
                             onClick={() => addItem(product, quantity)}
@@ -150,13 +175,19 @@ export default function ProductPage() {
                 </section>
             </div>
 
-            <section className="rounded-2xl border border-slate-200 dark:border-slate-800">
+            <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
                 <div className="flex border-b border-slate-200 dark:border-slate-800">
-                    <button className="p-4" onClick={() => setTab('description')}>Description</button>
-                    <button className="p-4" onClick={() => setTab('reviews')}>Reviews ({reviews.length})</button>
+                    <button className={`p-4 text-sm font-bold border-b-2 cursor-pointer transition ${tab === 'description' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500'}`} onClick={() => setTab('description')}>
+                        Description
+                    </button>
+                    <button className={`p-4 text-sm font-bold border-b-2 cursor-pointer transition ${tab === 'reviews' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500'}`} onClick={() => setTab('reviews')}>
+                        Reviews ({reviews.length})
+                    </button>
                 </div>
                 <div className="space-y-8 p-6">
-                    {tab === 'description' ? <p>{product.description}</p> : (
+                    {tab === 'description' ? (
+                        <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{product.description}</p>
+                    ) : (
                         <>
                             <ReviewForm rating={rating} setRating={setRating} comment={comment} setComment={setComment} errors={reviewErrors} setErrors={setReviewErrors} onSubmit={submitReview} />
                             <ReviewsList reviews={reviews} />
@@ -165,7 +196,12 @@ export default function ProductPage() {
                 </div>
             </section>
 
-            {related.length > 0 && <section className="space-y-4"><h2 className="text-2xl font-bold">Related products</h2><ProductGrid products={related} /></section>}
+            {related.length > 0 && (
+                <section className="space-y-4">
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Related products</h2>
+                    <ProductGrid products={related} />
+                </section>
+            )}
         </div>
     );
 }

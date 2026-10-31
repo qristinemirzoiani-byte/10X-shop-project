@@ -1,7 +1,6 @@
-// pages/OrderDetailsPage.tsx
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router';
-import {
+    import { useState, useEffect, useMemo } from 'react';
+    import { useParams, useNavigate, Link } from 'react-router';
+    import {
     ArrowLeft,
     CheckCircle2,
     Clock,
@@ -23,26 +22,20 @@ import {
     const { addItem } = useCart();
     const { showToast } = useToast();
 
-    const [order, setOrder] = useState<Order | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [currentTime, setCurrentTime] = useState<Date>(new Date());
-
-    useEffect(() => {
+    const order = useMemo<Order | null>(() => {
         try {
         const stored = localStorage.getItem(STORAGE_KEYS.orders);
         if (stored) {
             const parsed: Order[] = JSON.parse(stored);
-            const match = parsed.find((o) => String(o.id) === id);
-            if (match) {
-            setOrder(match);
-            }
+            return parsed.find((o) => String(o.id) === id) ?? null;
         }
         } catch (err) {
         console.warn('Failed to parse order details:', err);
-        } finally {
-        setLoading(false);
         }
+        return null;
     }, [id]);
+
+    const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -50,10 +43,6 @@ import {
         }, 15000);
         return () => clearInterval(timer);
     }, []);
-
-    if (loading) {
-        return <div className="py-12 text-center text-slate-400">Loading order details...</div>;
-    }
 
     if (!order) {
         return <NotFoundPage />;
@@ -125,7 +114,6 @@ import {
             </h3>
 
             <div className="grid grid-cols-3 gap-2 relative">
-            {/* Progress bar background line */}
             <div className="absolute top-5 left-1/6 right-1/6 h-1 bg-slate-200 dark:bg-slate-800 z-0" />
             <div
                 className="absolute top-5 left-1/6 h-1 bg-indigo-600 transition-all duration-500 z-0"
@@ -174,7 +162,6 @@ import {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            {/* Left Column: Items Table */}
             <div className="lg:col-span-2 space-y-6">
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
                 <div className="p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 font-bold text-sm text-slate-900 dark:text-white">
@@ -214,9 +201,7 @@ import {
             </div>
             </div>
 
-            {/* Right Column: Shipping & Summary */}
             <div className="space-y-6">
-            {/* Shipping Info */}
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
                 <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
@@ -237,7 +222,6 @@ import {
                 </div>
             </div>
 
-            {/* Totals Breakdown */}
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-3">
                 <h3 className="font-bold text-sm text-slate-900 dark:text-white pb-2 border-b border-slate-100 dark:border-slate-800">
                 Payment Summary

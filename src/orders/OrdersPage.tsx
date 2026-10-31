@@ -9,29 +9,27 @@ import { STORAGE_KEYS } from '../models/StorageService';
 export default function OrdersPage() {
     const { user } = useAuth();
     const isAuthenticated = user.isLoggedIn;
-    const [orders, setOrders] = useState<Order[]>([]);
+
+    const [orders, setOrders] = useState<Order[]>(() => {
+        try {
+            const stored = localStorage.getItem(STORAGE_KEYS.orders);
+            return stored ? JSON.parse(stored) : [];
+        } catch (e) {
+            console.error('Failed to load orders', e);
+            return [];
+        }
+    });
+
     const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
     useEffect(() => {
-        if (!isAuthenticated) return;
-
-        try {
-            const stored = localStorage.getItem(STORAGE_KEYS.orders);
-            if (stored) {
-                setOrders(JSON.parse(stored));
-            }
-        } catch (e) {
-            console.error('Failed to load orders', e);
-        }
-
         const interval = setInterval(() => {
             setCurrentTime(new Date());
         }, 15000);
 
         return () => clearInterval(interval);
-    }, [isAuthenticated]);
+    }, []);
 
-    // 2. გადამისამართების შემოწმება ჰუკების შემდეგ
     if (!isAuthenticated) {
         return <Navigate to="/login" state={{ from: '/orders' }} replace />;
     }
