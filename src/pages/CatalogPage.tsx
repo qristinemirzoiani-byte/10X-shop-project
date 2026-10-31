@@ -1,75 +1,33 @@
-    // pages/CatalogPage.tsx
-    import { useState, useEffect, useCallback, useMemo } from 'react';
-    import { useSearchParams } from 'react-router';
-    import { Search, RefreshCw, AlertCircle } from 'lucide-react';
-    import type { Product, Category, SortOption } from '../types/products.ts';
-    import { fetchProducts, fetchCategories } from '../api/products.api';
-    import { ProductGrid } from '../product/ProductGrid';
-    import { Pagination } from '../components/Pagination';
-    import { SkeletonCard } from '../product/CatalogSkeleton.tsx';
-    import { CustomSortDropdown } from '../components/CustomSortDropdown';
-    import { useTheme } from '../contexts/ThemeContext';
-    import { useDebounce } from '../hooks/useDebounce.ts';
+import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router';
+import { Search, RefreshCw, AlertCircle } from 'lucide-react';
+import type { Product, SortOption } from '../types/products.ts';
+import { fetchProducts } from '../api/products.api';
+import { ProductGrid } from '../product/ProductGrid';
+import { Pagination } from '../components/Pagination';
+import { SkeletonCard } from '../product/CatalogSkeleton.tsx';
+import { CustomSortDropdown } from '../components/CustomSortDropdown';
+import { useTheme } from '../contexts/ThemeContext';
 
-    export default function CatalogPage() {
+export default function CatalogPage() {
     const [searchParams, setSearchParams] = useSearchParams();
 
-    // Read state directly from URL
+// Read state directly from URL
     const queryParam = searchParams.get('q') || '';
     const categoryParam = searchParams.get('category') || '';
     const sortParam = (searchParams.get('sort') as SortOption) || '';
     const pageParam = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
 
-    // Local state for instant typing in search field
-    const [searchInput, setSearchInput] = useState(queryParam);
-    const debouncedSearch = useDebounce(searchInput, 400);
-
     // API Data state
     const [products, setProducts] = useState<Product[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const limit = 12;
-
     const { theme } = useTheme();
 
-    // Sync debounced search to URL
-    useEffect(() => {
-        const currentQ = searchParams.get('q') || '';
-        if (debouncedSearch !== currentQ) {
-        const nextParams = new URLSearchParams(searchParams);
-        if (debouncedSearch.trim()) {
-            nextParams.set('q', debouncedSearch.trim());
-            nextParams.delete('category'); // Search clears category according to PRD A1.6
-        } else {
-            nextParams.delete('q');
-        }
-        nextParams.set('page', '1');
-        setSearchParams(nextParams);
-        }
-    }, [debouncedSearch, searchParams, setSearchParams]);
-
-    // Keep input in sync if URL changes externally (e.g. back/forward navigation)
-    useEffect(() => {
-        setSearchInput(queryParam);
-    }, [queryParam]);
-
-    // Fetch categories on mount
-    useEffect(() => {
-        const controller = new AbortController();
-        fetchCategories(controller.signal)
-        .then((data) => setCategories(data))
-        .catch((err) => {
-            if (err.name !== 'AbortError') {
-            console.warn('Failed to load categories:', err);
-            }
-        });
-        return () => controller.abort();
-    }, []);
-
-    // Fetch products whenever URL parameters change
+// Fetch products whenever URL parameters change
     const loadProducts = useCallback(() => {
         const controller = new AbortController();
         setLoading(true);
@@ -106,33 +64,6 @@
         return cleanup;
     }, [loadProducts]);
 
-    // Handlers for Toolbar
-    const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const val = e.target.value;
-        const nextParams = new URLSearchParams(searchParams);
-        if (val) {
-        nextParams.set('category', val);
-        nextParams.delete('q'); // Category clears search according to PRD
-        setSearchInput('');
-        } else {
-        nextParams.delete('category');
-        }
-        nextParams.set('page', '1');
-        setSearchParams(nextParams);
-    };
-
-    const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const val = e.target.value;
-        const nextParams = new URLSearchParams(searchParams);
-        if (val) {
-        nextParams.set('sort', val);
-        } else {
-        nextParams.delete('sort');
-        }
-        nextParams.set('page', '1');
-        setSearchParams(nextParams);
-    };
-
     const handlePageChange = (newPage: number) => {
         const nextParams = new URLSearchParams(searchParams);
         nextParams.set('page', String(newPage));
@@ -140,7 +71,6 @@
     };
 
     const handleClearFilters = () => {
-        setSearchInput('');
         setSearchParams({});
     };
 
@@ -148,10 +78,7 @@
     const startItem = total === 0 ? 0 : (pageParam - 1) * limit + 1;
     const endItem = Math.min(pageParam * limit, total);
 
-    const hasActiveFilters = Boolean(queryParam || categoryParam || sortParam);
-
-    // Category-specific thematic backdrop images behind the products panel:
-    // Smartphones, Laptops, Beauty, Fragrances, Furniture, Groceries
+    // Category-specific thematic backdrop images
     const categoryBackgrounds: Record<string, string> = {
         smartphones: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1600&auto=format&fit=crop',
         laptops: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1600&auto=format&fit=crop',
@@ -252,7 +179,7 @@
             <button
                 type="button"
                 onClick={loadProducts}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-sm transition"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-sm transition cursor-pointer"
             >
                 <RefreshCw className="w-3.5 h-3.5" />
                 Retry
@@ -272,7 +199,7 @@
             <button
                 type="button"
                 onClick={handleClearFilters}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold text-xs hover:bg-indigo-700 shadow-sm transition"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-pink-600 text-white font-semibold text-xs hover:bg-pink-700 shadow-sm transition cursor-pointer"
             >
                 Clear filters
             </button>
@@ -290,3 +217,5 @@
         </div>
     );
 }
+
+export { CatalogPage };

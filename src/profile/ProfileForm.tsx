@@ -52,6 +52,7 @@ const handleSave = (e: React.FormEvent) => {
         if (!validate()) return;
 
         onSave({
+        username: formData.firstName.trim() || user.username,
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         email: formData.email.trim(),

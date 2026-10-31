@@ -14,11 +14,11 @@
     export const ProductCard = memo(function ProductCard({ product, onAdd }: ProductCardProps) {
     const navigate = useNavigate();
     const { addItem } = useCart();
-
+// for description
     const handleCardClick = () => {
         navigate(`/products/${product.id}`);
     };
-
+// for add product
     const handleAddToCart = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (onAdd) {

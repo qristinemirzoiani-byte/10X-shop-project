@@ -9,15 +9,15 @@ export function ProductGallery({ images, selectedImage, onSelectImage, title }: 
     return (
         <div className="space-y-4">
         {/* big lmage*/}
-        <div className="aspect-square bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden p-6 flex items-center justify-center shadow-sm">
+        <div className="max-w-md mx-auto aspect-square max-h-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden p-6 flex items-center justify-center shadow-sm">
             <img
-            src={selectedImage}
-            alt={title}
-            width={500}
-            height={500}
-            className="object-contain w-full h-full max-h-96 transition-all duration-300"
+                src={selectedImage}
+                alt={title}
+                width={400}
+                height={400}
+                className="object-contain w-full h-full max-h-68 transition-all duration-300"
             />
-        </div>
+            </div>
 
     {images.length > 1 && (
             <div className="flex items-center gap-3 overflow-x-auto pb-2">

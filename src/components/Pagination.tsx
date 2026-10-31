@@ -1,16 +1,15 @@
-    // components/product/Pagination.tsx
-    import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-    export interface PaginationProps {
+export interface PaginationProps {
     page: number;
     totalPages: number;
     onChange: (page: number) => void;
     }
 
-    export function Pagination({ page, totalPages, onChange }: PaginationProps) {
+export function Pagination({ page, totalPages, onChange }: PaginationProps) {
     if (totalPages <= 1) return null;
 
-    // Generate page numbers with ellipsis
+// Generate page numbers with ellipsis
     const getPageNumbers = () => {
         const pages: (number | string)[] = [];
         const maxVisible = 5;
@@ -41,13 +40,13 @@
     };
 
     return (
-        <nav className="flex items-center justify-center gap-1.5 mt-8" aria-label="Pagination">
+        <nav className="flex items-center justify-center gap-2 mt-8" aria-label="Pagination">
         {/* Previous button */}
         <button
             type="button"
             disabled={page <= 1}
             onClick={() => onChange(page - 1)}
-            className="inline-flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+            className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md text-slate-600 dark:text-slate-400 disabled:opacity-20 disabled:cursor-not-allowed hover:border-pink-500/40 hover:text-pink-500 dark:hover:text-pink-400 hover:bg-pink-500/10 transition-all duration-200 cursor-pointer"
             aria-label="Previous page"
         >
             <ChevronLeft className="w-4 h-4" />
@@ -59,7 +58,7 @@
             return (
                 <span
                 key={`ellipsis-${index}`}
-                className="w-9 h-9 flex items-center justify-center text-slate-400 text-sm"
+                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-slate-500 text-sm font-medium select-none"
                 >
                 …
                 </span>
@@ -75,10 +74,10 @@
                 type="button"
                 onClick={() => onChange(pageNum)}
                 aria-current={isActive ? 'page' : undefined}
-                className={`w-9 h-9 rounded-xl text-sm font-semibold transition ${
+                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer backdrop-blur-md ${
                 isActive
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
-                    : 'border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                    ? 'bg-pink-500/20 text-pink-600 dark:text-pink-300 border border-pink-500/50 shadow-sm shadow-pink-500/20'
+                    : 'border border-slate-200/60 dark:border-slate-800/80 bg-white/40 dark:bg-slate-900/40 text-slate-600 dark:text-slate-400 hover:border-pink-500/40 hover:text-pink-500 dark:hover:text-pink-300 hover:bg-pink-500/10'
                 }`}
             >
                 {pageNum}
@@ -91,7 +90,7 @@
             type="button"
             disabled={page >= totalPages}
             onClick={() => onChange(page + 1)}
-            className="inline-flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+            className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md text-slate-600 dark:text-slate-400 disabled:opacity-20 disabled:cursor-not-allowed hover:border-pink-500/40 hover:text-pink-500 dark:hover:text-pink-400 hover:bg-pink-500/10 transition-all duration-200 cursor-pointer"
             aria-label="Next page"
         >
             <ChevronRight className="w-4 h-4" />

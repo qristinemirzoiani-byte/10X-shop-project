@@ -123,9 +123,6 @@ export default function ProductPage() {
 
     return (
         <div className="space-y-10">
-            <Link to="/" className="inline-flex items-center gap-2 text-sm text-indigo-600 hover:underline">
-                <ArrowLeft className="h-4 w-4" /> Back to catalog
-            </Link>
 
             <div className="grid gap-8 md:grid-cols-2">
                 <ProductGallery images={images} selectedImage={image || images[0]} onSelectImage={setImage} title={product.title} />
@@ -141,8 +138,13 @@ export default function ProductPage() {
                         <button aria-label="Decrease quantity" disabled={quantity <= 1} onClick={() => setQuantity((n) => Math.max(1, n - 1))}><Minus className="h-4 w-4" /></button>
                         <span>{quantity}</span>
                         <button aria-label="Increase quantity" disabled={quantity >= product.stock} onClick={() => setQuantity((n) => Math.min(product.stock, n + 1))}><Plus className="h-4 w-4" /></button>
-                        <button disabled={!product.stock} onClick={() => addItem(product, quantity)} className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">
-                            <ShoppingCart className="h-4 w-4" /> Add to cart
+                        <button
+                            disabled={!product.stock}
+                            onClick={() => addItem(product, quantity)}
+                            className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-bold text-sm px-6 py-3 shadow-lg shadow-pink-600/30 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                        >
+                            <ShoppingCart className="h-4 w-4" />
+                            <span>{product.stock ? 'Add to cart' : 'Out of stock'}</span>
                         </button>
                     </div>
                 </section>

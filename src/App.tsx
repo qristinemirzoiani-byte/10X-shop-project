@@ -1,5 +1,5 @@
 import { BrowserRouter } from 'react-router';
-// import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -8,7 +8,7 @@ import { AppRoutes } from './routes/AppRoutes';
 
 export default function App() {
   return (
-    // <ErrorBoundary>
+    <ErrorBoundary>
       <BrowserRouter>
         <ThemeProvider>
           <ToastProvider>
@@ -20,6 +20,6 @@ export default function App() {
           </ToastProvider>
         </ThemeProvider>
       </BrowserRouter>
-  //   </ErrorBoundary>
+  </ErrorBoundary>
   );
 }

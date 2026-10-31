@@ -1,10 +1,8 @@
 import { ApiError } from './ApiError';
 
 export class ApiClient {
-    // 1. Явно объявляем свойство класса (оно сотрется в JS)
     private readonly baseUrl: string;
 
-    // 2. Убираем private readonly из аргументов конструктора
     constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
     }

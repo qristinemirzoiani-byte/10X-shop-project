@@ -16,7 +16,7 @@
     import { Logo } from '../components/Logo';
     import { DesktopNav } from '../components/DesktopNav';
     import { MobileDrawer } from '../components/MobileDrawer';
-
+    import { SearchBar } from '../components/SearchBar';
 
     export function Header() {
     const { user, logout } = useAuth();
@@ -32,21 +32,24 @@
         setMobileMenuOpen(false);
         navigate('/');
     };
+
     return (
         <header className="sticky top-0 z-40 bg-transparent border-none transition-colors">
         <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16 gap-4">
             
-            {/* Brand Logo - Compact 10X badge + plain 'Shop' text */}
-            <Logo onClick={() => setMobileMenuOpen(false)} />
+            {/* left side: logo + navigation (Catalog, Orders) + search bar! */}
+            <div className="flex items-center gap-3">
+                <Logo onClick={() => setMobileMenuOpen(false)} />
+                <DesktopNav isLoggedIn={user.isLoggedIn} />
+                <div className="hidden sm:block w-64 md:w-80 ml-2">
+                <SearchBar />
+                </div>
+            </div>
 
-            {/* Desktop Navigation - Centered / Middle space */}
-            <DesktopNav isLoggedIn={user.isLoggedIn} />
-
-            {/* Desktop Right Actions: Theme Toggle, Cart, Login / Profile & Logout */}
+            {/* right side: Theme, Cart, Login / Profile & Logout */}
             <div className="hidden md:flex items-center gap-3 shrink-0">
-                
-                {/* Theme Toggle Button (Dark / Light) */}
+                {/* Theme Toggle Button */}
                 <button
                 type="button"
                 onClick={toggleTheme}
@@ -82,9 +85,9 @@
                     className="flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold text-slate-200 hover:text-white bg-black/40 hover:bg-black/60 border border-slate-700/50 transition cursor-pointer shadow-sm"
                     >
                     <div className="w-5 h-5 rounded-full bg-pink-500/20 text-pink-300 flex items-center justify-center font-bold text-xs uppercase border border-pink-500/30">
-                        {user.username.charAt(0) || 'U'}
+                        {(user.firstName || user.username).charAt(0) || 'U'}
                     </div>
-                    <span>{user.username}</span>
+                    <span className="max-w-28 truncate">{user.firstName || user.username}</span>
                     </Link>
 
                     <button
@@ -110,7 +113,6 @@
 
             {/* Mobile Right Bar: Cart, Theme & Hamburger */}
             <div className="flex items-center gap-2 md:hidden">
-                {/* Theme Toggle */}
                 <button
                 type="button"
                 onClick={toggleTheme}
@@ -124,7 +126,6 @@
                 )}
                 </button>
 
-                {/* Cart with Badge */}
                 <Link
                 to="/cart"
                 className="relative p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-pink-500 transition"
@@ -139,7 +140,6 @@
                 )}
                 </Link>
 
-                {/* Hamburger Button */}
                 <button
                 type="button"
                 onClick={() => setMobileMenuOpen((prev) => !prev)}
@@ -155,14 +155,12 @@
         {/* Mobile Drawer */}
         {mobileMenuOpen && (
             <MobileDrawer 
-                user={user} 
-                totalItems={totalItems} 
-                onClose={() => setMobileMenuOpen(false)} 
-                onLogout={handleLogout} 
+            user={user} 
+            totalItems={totalItems} 
+            onClose={() => setMobileMenuOpen(false)} 
+            onLogout={handleLogout} 
             />
-            )}
-            
+        )}
         </header>
     );
 }
-

@@ -1,5 +1,6 @@
     import React from 'react';
     import { Link } from 'react-router';
+    import { Trash2 } from 'lucide-react';
     import type { Order } from '../types/order';
     import { formatPrice } from '../utils/format';
 
@@ -10,9 +11,10 @@
         icon: React.ReactNode;
         badgeClass: string;
     };
+    onCancel?: (orderId: number) => void;
     }
 
-    export function OrderCard({ order, status }: OrderCardProps) {
+    export function OrderCard({ order, status, onCancel }: OrderCardProps) {
     const totalItems = order.items.reduce((acc, item) => acc + item.quantity, 0);
 
     return (
@@ -32,9 +34,24 @@
             </span>
             </div>
 
+            {/* Right side: Date and Cancel button */}
+            <div className="flex items-center gap-3">
             <span className="text-xs text-slate-500 dark:text-slate-400">
-            {new Date(order.placedAt).toLocaleDateString()} {new Date(order.placedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {new Date(order.placedAt).toLocaleDateString()} {new Date(order.placedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
+
+            {onCancel && (
+                <button
+                type="button"
+                onClick={() => onCancel(order.id)}
+                title="Cancel this order"
+                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-rose-400 hover:text-white hover:bg-rose-900/60 border border-rose-800/60 rounded-xl transition cursor-pointer"
+                >
+                <Trash2 className="w-3 h-3" />
+                <span>Cancel</span>
+                </button>
+            )}
+            </div>
         </div>
 
         {/* Items Preview */}

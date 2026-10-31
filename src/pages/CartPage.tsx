@@ -57,14 +57,6 @@ export default function CartPage() {
                         Review your chosen items before proceeding to checkout
                     </p>
                 </div>
-
-                <Link
-                    to="/"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
-                >
-                    <ArrowLeft className="w-4 h-4" />
-                    Continue Shopping
-                </Link>
             </div>
 
             {/* Main Grid: Left Items List, Right Summary */}
