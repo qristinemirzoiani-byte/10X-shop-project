@@ -1,6 +1,6 @@
-import { useEffect, useState, type FormEvent } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
-import { AlertCircle, ArrowLeft, Minus, Plus, ShoppingCart, Star } from 'lucide-react';
+import { useEffect, useState, type SyntheticEvent } from 'react';
+import {  useNavigate, useParams } from 'react-router';
+import { AlertCircle,  Minus, Plus, ShoppingCart, Star } from 'lucide-react';
 import { ApiError } from '../api/ApiError';
 import { fetchProductById, fetchRelatedProducts } from '../api/products.api';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -76,8 +76,8 @@ export default function ProductPage() {
         return () => controller.abort();
     }, [id, retry]);
 
-    const submitReview = (event: FormEvent) => {
-        event.preventDefault();
+    const submitReview = (event: SyntheticEvent) => {
+    event.preventDefault();
         const text = comment.trim();
         const errors = {
             ...(rating < 1 || rating > 5 ? { rating: 'Choose a rating from 1 to 5.' } : {}),

@@ -1,6 +1,5 @@
-    // context/cart.reducer.ts
-    import type { CartState } from '../types/cart';
-    import type { Product } from '../types/products';
+import type { CartState } from '../types/cart';
+import type { Product } from '../types/products';
 
     export type CartAction =
     | { type: 'ADD_ITEM'; product: Product; qty: number }
@@ -99,7 +98,6 @@
         }
 
         default: {
-        const _exhaustive: never = action;
         return state;
         }
     }

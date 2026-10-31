@@ -1,4 +1,4 @@
-import type { AuthUser } from '../contexts/AuthContext';
+import type { AuthUser } from '../types/user';
 
 interface ProfileOverviewProps {
     user: AuthUser;

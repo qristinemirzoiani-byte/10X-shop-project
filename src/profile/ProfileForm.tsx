@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User, Save } from 'lucide-react';
-import type { AuthUser } from '../contexts/AuthContext';
+import type { AuthUser } from '../types/user';
 import { isValidEmail, isValidPhone } from '../utils/validation';
 
 interface ProfileFormProps {

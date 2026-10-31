@@ -1,5 +1,5 @@
     import { useState } from 'react';
-    import { useNavigate, Link } from 'react-router';
+    import { Link } from 'react-router';
     import { CheckCircle2, PackageCheck, ShoppingBag, AlertCircle } from 'lucide-react';
     import { useAuth } from '../contexts/AuthContext';
     import { useCart } from '../contexts/CartContext';
@@ -13,8 +13,6 @@
     export default function CheckoutPage() {
     const { user } = useAuth();
     const { state, cart, clearCart } = useCart();
-    const navigate = useNavigate();
-
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
 

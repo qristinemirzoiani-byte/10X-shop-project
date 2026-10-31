@@ -1,4 +1,4 @@
-    import React from 'react';
+    import type { ReactNode } from 'react';
     import { Link } from 'react-router';
     import { Trash2 } from 'lucide-react';
     import type { Order } from '../types/order';
@@ -8,7 +8,7 @@
     order: Order;
     status: {
         label: string;
-        icon: React.ReactNode;
+        icon: ReactNode;
         badgeClass: string;
     };
     onCancel?: (orderId: number) => void;
@@ -57,7 +57,7 @@
         {/* Items Preview */}
         <div className="space-y-2">
             {order.items.map((item, idx) => {
-            const itemKey = (item as any).productId || (item as any).id || idx;
+            const itemKey = `${order.id}-${item.productId}-${idx}`;
             return (
                 <div key={itemKey} className="flex items-center justify-between text-xs sm:text-sm">
                 <div className="flex items-center gap-3">

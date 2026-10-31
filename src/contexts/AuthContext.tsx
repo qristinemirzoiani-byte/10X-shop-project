@@ -1,17 +1,7 @@
     import React, { createContext, useContext, useState, useEffect } from 'react';
     import { STORAGE_KEYS } from '../models/StorageService';
+    import type { AuthUser } from '../types/user';
 
-
-    export interface AuthUser {
-    username: string;
-    isLoggedIn: boolean;
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    phone?: string;
-    }
-
-    
     interface AuthContextType {
     user: AuthUser;
     login: (username: string) => void;
@@ -19,7 +9,6 @@
     updateProfile: (details: Partial<AuthUser>) => void; 
     }
 
-    
     const defaultGuestUser: AuthUser = {
     username: '',
     isLoggedIn: false,
@@ -31,10 +20,8 @@
 
     // 4. Context
     const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
     // 5. Provider component
     export function AuthProvider({ children }: { children: React.ReactNode }) {
-
     const [user, setUser] = useState<AuthUser>(() => {
         try {
         const saved = localStorage.getItem(STORAGE_KEYS.user);
@@ -42,8 +29,8 @@
             const parsed = JSON.parse(saved);
             if (parsed && parsed.isLoggedIn) return parsed;
         }
-        } catch {
-        // fallback
+        } catch (err: unknown) {
+                console.warn('Failed to load user from localStorage:', err);
         }
         return defaultGuestUser;
     });
@@ -56,8 +43,8 @@
         } else {
             localStorage.removeItem(STORAGE_KEYS.user);
         }
-        } catch {
-        // ignore
+        } catch (err: unknown) {
+            console.warn('Failed to update user in localStorage:', err);
         }
     }, [user]);
 

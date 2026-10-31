@@ -1,7 +1,6 @@
 
 import { api } from './ApiClient';
 import type { Product, ProductsResponse, Category } from '../types/products';
-// ✅ Убрали явное расширение .ts (или замените на .js, если проект требует ESM расширений)
 import type { CatalogParams } from '../types/api'; 
 
 export async function fetchProducts(
