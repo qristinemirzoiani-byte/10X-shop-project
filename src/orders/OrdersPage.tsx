@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, Navigate } from 'react-router';
-import { Package, Clock, Truck, CheckCircle2, ShoppingBag, PlusCircle } from 'lucide-react';
+import { Package, Clock, Truck, CheckCircle2, ShoppingBag, PlusCircle, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { OrderCard } from '../orders/OrderCard';
-                                                                                                                                                                                                                                                                                                                                                                import type { Order } from '../types/order';
+import type { Order } from '../types/order';
 import { STORAGE_KEYS } from '../models/StorageService';
 
 export default function OrdersPage() {
@@ -12,11 +12,9 @@ export default function OrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
-    if (!isAuthenticated) {
-        return <Navigate to="/login" state={{ from: '/orders' }} replace />;
-    }
+    useEffect(() => {
+        if (!isAuthenticated) return;
 
-    const loadOrders = () => {
         try {
             const stored = localStorage.getItem(STORAGE_KEYS.orders);
             if (stored) {
@@ -25,16 +23,18 @@ export default function OrdersPage() {
         } catch (e) {
             console.error('Failed to load orders', e);
         }
-    };
 
-    useEffect(() => {
-        loadOrders();
         const interval = setInterval(() => {
             setCurrentTime(new Date());
         }, 15000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [isAuthenticated]);
+
+    // 2. გადამისამართების შემოწმება ჰუკების შემდეგ
+    if (!isAuthenticated) {
+        return <Navigate to="/login" state={{ from: '/orders' }} replace />;
+    }
 
     const getOrderStatus = (placedAt: string) => {
         const elapsedMs = currentTime.getTime() - new Date(placedAt).getTime();
@@ -105,9 +105,24 @@ export default function OrdersPage() {
         localStorage.setItem(STORAGE_KEYS.orders, JSON.stringify(updated));
     };
 
+    const handleCancelOrder = (orderId: number) => {
+        if (window.confirm('Are you sure you want to cancel this order?')) {
+            const updated = orders.filter((o) => o.id !== orderId);
+            setOrders(updated);
+            localStorage.setItem(STORAGE_KEYS.orders, JSON.stringify(updated));
+        }
+    };
+
+    const handleClearAllOrders = () => {
+        if (window.confirm('Clear all orders from history?')) {
+            setOrders([]);
+            localStorage.removeItem(STORAGE_KEYS.orders);
+        }
+    };
+
     return (
         <div className="max-w-4xl mx-auto space-y-6 py-4">
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-5">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-5">
                 <div>
                     <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                         Orders History
@@ -117,14 +132,27 @@ export default function OrdersPage() {
                     </p>
                 </div>
 
-                <button
-                    type="button"
-                    onClick={handleCreateMockOrder}
-                    className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-xl bg-pink-500/10 text-pink-500 hover:bg-pink-500/20 border border-pink-500/30 transition cursor-pointer"
-                >
-                    <PlusCircle className="w-3.5 h-3.5" />
-                    <span> Add Mock Order</span>
-                </button>
+                <div className="flex items-center gap-2">
+                    {orders.length > 0 && (
+                        <button
+                            type="button"
+                            onClick={handleClearAllOrders}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 transition cursor-pointer"
+                        >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Clear All</span>
+                        </button>
+                    )}
+
+                    <button
+                        type="button"
+                        onClick={handleCreateMockOrder}
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-xl bg-pink-500/10 text-pink-500 hover:bg-pink-500/20 border border-pink-500/30 transition cursor-pointer"
+                    >
+                        <PlusCircle className="w-3.5 h-3.5" />
+                        <span>Add Mock Order</span>
+                    </button>
+                </div>
             </div>
 
             {orders.length === 0 ? (
@@ -155,6 +183,7 @@ export default function OrdersPage() {
                             key={order.id} 
                             order={order} 
                             status={getOrderStatus(order.placedAt)} 
+                            onCancel={handleCancelOrder}
                         />
                     ))}
                 </div>
@@ -162,5 +191,3 @@ export default function OrdersPage() {
         </div>
     );
 }
-
-export { OrdersPage };

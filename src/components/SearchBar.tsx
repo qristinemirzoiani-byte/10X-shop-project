@@ -29,7 +29,7 @@ export function SearchBar() {
         }, 400);
 
         return () => clearTimeout(timer);
-    }, [term]);
+    }, [term, searchParams, navigate, location.pathname]);
 
     const handleClear = () => {
         setTerm('');

@@ -51,7 +51,7 @@
         }
 
         const postalClean = formData.postalCode?.trim() || '';
-        if (!postalClean || postalClean.length < 4 || postalClean.length > 10) {
+        if (!/^\d{4,10}$/.test(postalClean)) {
         errs.postalCode = 'Postal code must be 4-10 digits';
         }
 
