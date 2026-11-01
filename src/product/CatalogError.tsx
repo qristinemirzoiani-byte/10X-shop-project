@@ -1,11 +1,11 @@
-import { AlertCircle, RefreshCw } from 'lucide-react';
+    import { AlertCircle, RefreshCw } from 'lucide-react';
 
-interface CatalogErrorProps {
+    interface CatalogErrorProps {
     error: string;
     onRetry: () => void;
-}
+    }
 
-export function CatalogError({ error, onRetry }: CatalogErrorProps) {
+    export function CatalogError({ error, onRetry }: CatalogErrorProps) {
     return (
         <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-3xl p-8 text-center max-w-md mx-auto space-y-3">
         <AlertCircle className="w-10 h-10 text-rose-500 mx-auto" />
@@ -22,3 +22,5 @@ export function CatalogError({ error, onRetry }: CatalogErrorProps) {
         </div>
     );
 }
+
+export default CatalogError;

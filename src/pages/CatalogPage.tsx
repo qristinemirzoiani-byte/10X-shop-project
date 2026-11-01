@@ -1,12 +1,15 @@
+    // pages/CatalogPage.tsx
     import { useState, useEffect } from 'react';
     import { useSearchParams } from 'react-router';
-    import { Search, RefreshCw, AlertCircle } from 'lucide-react';
     import type { Product, SortOption } from '../types/products';
     import { fetchProducts } from '../api/products.api';
     import { ProductGrid } from '../product/ProductGrid';
     import { Pagination } from '../components/Pagination';
     import { SkeletonCard } from '../product/CatalogSkeleton';
     import { CustomSortDropdown } from '../components/CustomSortDropdown';
+    import { CategoryFilter } from '../product/CategoryFilter';
+    import { CatalogEmpty } from '../product/CatalogEmpty';
+    import { CatalogError } from '../product/CatalogError';
     import { useTheme } from '../contexts/ThemeContext';
 
     export default function CatalogPage() {
@@ -16,7 +19,8 @@
     const queryParam = searchParams.get('q') || '';
     const categoryParam = searchParams.get('category') || '';
     const sortParam = (searchParams.get('sort') as SortOption) || '';
-    const pageParam = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+    const rawPage = parseInt(searchParams.get('page') || '1', 10);
+    const pageParam = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
 
     // API Data state
     const [products, setProducts] = useState<Product[]>([]);
@@ -25,10 +29,19 @@
     const [error, setError] = useState<string | null>(null);
     const [retryKey, setRetryKey] = useState(0);
 
+    // Sync loading state during render when URL params change (prevents react-hooks/set-state-in-effect lint error)
+    const currentParamsKey = `${queryParam}|${categoryParam}|${sortParam}|${pageParam}|${retryKey}`;
+    const [prevParamsKey, setPrevParamsKey] = useState(currentParamsKey);
+
+    if (prevParamsKey !== currentParamsKey) {
+        setPrevParamsKey(currentParamsKey);
+    setLoading(true);
+        setError(null);
+    }
+
     const limit = 12;
     const { theme } = useTheme();
 
-    // Fetch products whenever URL parameters change without direct synchronous setState in effect
     useEffect(() => {
         let ignore = false;
         const controller = new AbortController();
@@ -80,6 +93,7 @@
     const startItem = total === 0 ? 0 : (pageParam - 1) * limit + 1;
     const endItem = Math.min(pageParam * limit, total);
 
+    // Category thematic backgrounds
     const categoryBackgrounds: Record<string, string> = {
         smartphones: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1600&auto=format&fit=crop',
         laptops: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1600&auto=format&fit=crop',
@@ -124,6 +138,7 @@
         className="space-y-6 max-w-7xl mx-auto py-6 sm:py-8 px-5 sm:px-8 rounded-[28px] transition-all duration-300 backdrop-blur-xl bg-pink-50/75 dark:bg-[#0B101D]/90 border border-pink-200/60 dark:border-slate-800/80 shadow-2xl"
         style={containerBgStyle}
         >
+        {/* Catalog Header, Count & Custom Styled Sort Dropdown */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-pink-200/60 dark:border-slate-800/80 pb-5">
             <div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -133,6 +148,7 @@
                 Browse our wide selection of premium products
             </p>
 
+            {/* Active Search / Filter Indicator */}
             {queryParam && (
                 <div className="inline-flex items-center gap-2 mt-2 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/30 text-xs text-pink-600 dark:text-pink-400 font-medium">
                 <span>Search: <strong>"{queryParam}"</strong></span>
@@ -148,6 +164,7 @@
             )}
             </div>
 
+            {/* Right side: Count & Pink Styled Custom Sort Dropdown */}
             <div className="flex flex-wrap items-center gap-3 sm:gap-4 self-end sm:self-center">
             {!loading && total > 0 && (
                 <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
@@ -160,6 +177,10 @@
             </div>
         </div>
 
+        {/* Category Filter Component */}
+        <CategoryFilter activeCategory={categoryParam} className="pb-1" />
+
+        {/* Main Content Area */}
         {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -167,43 +188,15 @@
             ))}
             </div>
         ) : error ? (
-            <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-2xl p-8 text-center max-w-lg mx-auto">
-            <AlertCircle className="w-10 h-10 text-rose-600 dark:text-rose-400 mx-auto mb-3" />
-            <h3 className="font-bold text-base text-rose-900 dark:text-rose-200 mb-1">
-                Failed to load products
-            </h3>
-            <p className="text-xs text-rose-700 dark:text-rose-300 mb-4">{error}</p>
-            <button
-                type="button"
-                onClick={() => {
+            <CatalogError
+            error={error}
+            onRetry={() => {
                 setLoading(true);
                 setRetryKey((k) => k + 1);
-                }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-sm transition cursor-pointer"
-            >
-                <RefreshCw className="w-3.5 h-3.5" />
-                Retry
-            </button>
-            </div>
+            }}
+            />
         ) : products.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-12 text-center max-w-md mx-auto shadow-sm">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3">
-                <Search className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
-                No products found.
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
-                We couldn't find any products matching your criteria. Try adjusting your search or filters.
-            </p>
-            <button
-                type="button"
-                onClick={handleClearFilters}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold text-xs hover:bg-indigo-700 shadow-sm transition"
-            >
-                Clear filters
-            </button>
-            </div>
+            <CatalogEmpty onClear={handleClearFilters} />
         ) : (
             <>
             <ProductGrid products={products} />
@@ -217,3 +210,5 @@
         </div>
     );
 }
+
+export { CatalogPage };

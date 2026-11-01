@@ -38,7 +38,18 @@
     className = '',
     }: CategoryFilterProps) {
     const [searchParams, setSearchParams] = useSearchParams();
-    const currentCategory = activeCategory ?? (searchParams.get('category') || 'all');
+
+    // Resolve category: if activeCategory is empty string, undefined or null, read from URL.
+    // If still empty or 'all', default to 'all'.
+    const rawCategory =
+        activeCategory !== undefined && activeCategory !== null && activeCategory.trim() !== ''
+        ? activeCategory
+        : (searchParams.get('category') || 'all');
+
+    const currentCategory =
+        !rawCategory || rawCategory.trim() === '' || rawCategory.toLowerCase() === 'all'
+        ? 'all'
+        : rawCategory;
 
     const handleSelect = (id: string) => {
         if (onSelectCategory) {

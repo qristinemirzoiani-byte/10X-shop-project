@@ -7,7 +7,7 @@
     signal?: AbortSignal
     ): Promise<ProductsResponse> {
     const limit = params.limit ?? 12;
-    const page = params.page ?? 1;
+    const page = typeof params.page === 'number' && !Number.isNaN(params.page) && params.page > 0 ? params.page : 1;
     const skip = (page - 1) * limit;
 
     const searchParams = new URLSearchParams();

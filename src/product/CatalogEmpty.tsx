@@ -1,13 +1,12 @@
+    import { Search } from 'lucide-react';
 
-import { Search } from 'lucide-react';
-
-interface CatalogEmptyProps {
+    interface CatalogEmptyProps {
     onClear: () => void;
     }
 
-export function CatalogEmpty({ onClear }: CatalogEmptyProps) {
+    export function CatalogEmpty({ onClear }: CatalogEmptyProps) {
     return (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-12 text-center max-w-md mx-auto space-y-3">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-12 text-center max-w-md mx-auto space-y-3 shadow-sm">
         <Search className="w-10 h-10 text-slate-400 mx-auto" />
         <h3 className="text-lg font-bold text-slate-900 dark:text-white">No products found</h3>
         <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -23,3 +22,5 @@ export function CatalogEmpty({ onClear }: CatalogEmptyProps) {
         </div>
     );
 }
+
+export default CatalogEmpty;
