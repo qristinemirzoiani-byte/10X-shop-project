@@ -1,12 +1,11 @@
-import { NavLink } from 'react-router';
-import { PackageCheck } from 'lucide-react';
+    import { NavLink } from 'react-router';
+    import { PackageCheck } from 'lucide-react';
 
     interface DesktopNavProps {
     isLoggedIn: boolean;
     }
 
     export function DesktopNav({ isLoggedIn }: DesktopNavProps) {
-    // სტილის დამხმარე ფუნქცია, რომელიც ამოვიტანეთ ჰედერიდან
     const navStyle = ({ isActive }: { isActive: boolean }) =>
         `text-sm font-semibold tracking-wide transition-all px-5 py-1.5 rounded-full flex items-center gap-2 cursor-pointer ${
         isActive

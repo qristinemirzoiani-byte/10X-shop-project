@@ -1,7 +1,9 @@
-import { NavLink, Link } from 'react-router';
-import { User, LogOut, LogIn } from 'lucide-react';
+    import { NavLink } from 'react-router';
+    import { User, LogOut, LogIn } from 'lucide-react';
 
     interface MobileDrawerProps {
+    isOpen?: boolean;
+    open?: boolean;
     user: {
         isLoggedIn: boolean;
         username: string;
@@ -11,7 +13,13 @@ import { User, LogOut, LogIn } from 'lucide-react';
     onLogout: () => void;
     }
 
-    export function MobileDrawer({ user, totalItems, onClose, onLogout }: MobileDrawerProps) {
+    export function MobileDrawer({ isOpen, open, user, totalItems, onClose, onLogout }: MobileDrawerProps) {
+    const visible = isOpen ?? open ?? true;
+
+    if (!visible) {
+        return null;
+    }
+
     const linkStyle = ({ isActive }: { isActive: boolean }) =>
         `block px-4 py-2.5 rounded-xl text-base font-semibold transition ${
         isActive
@@ -74,14 +82,20 @@ import { User, LogOut, LogIn } from 'lucide-react';
             </>
         ) : (
             <div className="pt-2">
-            <Link
+            <NavLink
                 to="/login"
                 onClick={onClose}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-pink-500/25 border border-pink-400/50 text-white transition cursor-pointer"
+                className={({ isActive }) =>
+                `w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition cursor-pointer ${
+                    isActive
+                    ? 'bg-pink-500/40 border-pink-300 text-white shadow-[0_0_15px_rgba(244,63,94,0.3)]'
+                    : 'bg-pink-500/25 hover:bg-pink-500/35 border border-pink-400/50 text-white'
+                }`
+                }
             >
                 <LogIn className="w-4 h-4" />
                 <span>Log in to Account</span>
-            </Link>
+            </NavLink>
             </div>
         )}
         </div>
