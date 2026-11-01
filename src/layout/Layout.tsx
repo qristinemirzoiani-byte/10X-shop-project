@@ -1,3 +1,4 @@
+    import { useRef, useEffect } from 'react';
     import { Outlet, useLocation, useSearchParams } from 'react-router';
     import { Header } from './Header';
     import { Footer } from './Footer';
@@ -10,8 +11,16 @@
     export function Layout() {
     const location = useLocation();
     const [searchParams] = useSearchParams();
+    const mainRef = useRef<HTMLElement>(null);
     const isCatalog = location.pathname === '/';
     const category = (searchParams.get('category') || '').toLowerCase();
+
+    // Reset scroll to top on route change
+    useEffect(() => {
+        if (mainRef.current) {
+        mainRef.current.scrollTop = 0;
+        }
+    }, [location.pathname]);
 
     // Category determination for active background styling:
     // City background: 'all products', 'laptops & tech', 'smartphones', 'furniture'
@@ -28,7 +37,7 @@
     const onlineBeautyFallback = 'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?q=80&w=1920&auto=format&fit=crop';
 
     return (
-        <div className="h-screen flex flex-col bg-[#0B0F19] text-slate-100 overflow-hidden relative">
+        <div className="h-screen flex flex-col bg-brand-dark text-slate-100 overflow-hidden relative">
         <ScrollToTop />
 
         {/* ========================================================
@@ -94,8 +103,12 @@
             {/* Stationary Left Sidebar */}
             {isCatalog && <Sidebar />}
 
-            {/* Right scrollable catalog content area. Footer is inside scroll flow at bottom (no sticky screen-cutting effect!) */}
-            <main className="flex-1 min-w-0 h-full overflow-y-auto no-scrollbar overflow-x-hidden px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col justify-between">
+            {/* Right scrollable catalog content area. Footer is inside scroll flow at bottom */}
+            <main
+            ref={mainRef}
+            id="main-content"
+            className="flex-1 min-w-0 h-full overflow-y-auto no-scrollbar overflow-x-hidden px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col justify-between"
+            >
             <div className="flex-1 pb-8">
                 <Outlet />
             </div>

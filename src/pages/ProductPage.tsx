@@ -38,15 +38,13 @@ export default function ProductPage() {
     const [notFound, setNotFound] = useState(false);
     const [retry, setRetry] = useState(0);
 
-    useEffect(() => {
-        const productId = Number(id);
-        const controller = new AbortController();
+    const productId = Number(id);
+    const isInvalidId = !id || !Number.isInteger(productId) || productId <= 0;
 
-        if (!id || !Number.isInteger(productId) || productId <= 0) {
-            setNotFound(true);
-            setLoading(false);
-            return () => controller.abort();
-        }
+    useEffect(() => {
+        if (isInvalidId) return;
+
+        const controller = new AbortController();
 
         async function load() {
             try {
@@ -76,7 +74,7 @@ export default function ProductPage() {
 
         void load();
         return () => controller.abort();
-    }, [id, retry]);
+    }, [productId, isInvalidId, retry]);
 
     const submitReview = (event: SyntheticEvent) => {
         event.preventDefault();
@@ -105,8 +103,8 @@ export default function ProductPage() {
         showToast('Your review has been added.', 'success');
     };
 
+    if (isInvalidId || notFound) return <NotFoundPage />;
     if (loading) return <LoadingSpinner text="Loading product..." />;
-    if (notFound) return <NotFoundPage />;
     if (error || !product) {
         return (
             <div className="mx-auto max-w-lg py-16 text-center">
@@ -205,3 +203,5 @@ export default function ProductPage() {
         </div>
     );
 }
+
+export { ProductPage };
