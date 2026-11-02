@@ -4,6 +4,7 @@ import { Moon, Sun, Trash2, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
+import { useCart } from '../contexts/CartContext';
 import { STORAGE_KEYS } from '../models/StorageService';
 import { ProfileOverview } from '../profile/ProfileOverview';
 import { ProfileForm } from '../profile/ProfileForm';
@@ -12,6 +13,7 @@ export default function ProfilePage() {
   const { user, updateProfile, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { showToast } = useToast();
+  const { clearCart } = useCart();
   const navigate = useNavigate();
 
   const [orderCount, setOrderCount] = useState<number>(() => {
@@ -34,7 +36,7 @@ export default function ProfilePage() {
       )
     ) {
       try {
-        localStorage.removeItem(STORAGE_KEYS.cart);
+        clearCart();
         localStorage.removeItem(STORAGE_KEYS.orders);
         localStorage.removeItem(STORAGE_KEYS.reviews);
         setOrderCount(0);
