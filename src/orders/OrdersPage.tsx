@@ -4,6 +4,7 @@ import { Package, Clock, Truck, CheckCircle2, ShoppingBag, PlusCircle, Trash2 } 
 import { useAuth } from '../contexts/AuthContext';
 import { OrderCard } from '../orders/OrderCard';
 import type { Order } from '../types/order';
+import { OrderModel } from '../models/Order';
 import { STORAGE_KEYS } from '../models/StorageService';
 
 export default function OrdersPage() {
@@ -34,28 +35,28 @@ export default function OrdersPage() {
         return <Navigate to="/login" state={{ from: '/orders' }} replace />;
     }
 
-    const getOrderStatus = (placedAt: string) => {
-        const elapsedMs = currentTime.getTime() - new Date(placedAt).getTime();
-        const elapsedMinutes = elapsedMs / (1000 * 60);
+    const getOrderStatus = (order: Order) => {
+        const label = OrderModel.getStatus(order, currentTime);
 
-        if (elapsedMinutes < 1) {
-            return {
-                label: 'Processing',
-                icon: <Clock className="w-3.5 h-3.5 animate-spin text-amber-400" />,
-                badgeClass: 'bg-amber-950/40 text-amber-400 border-amber-500/30',
-            };
-        } else if (elapsedMinutes < 3) {
-            return {
-                label: 'Shipped',
-                icon: <Truck className="w-3.5 h-3.5 text-blue-400" />,
-                badgeClass: 'bg-blue-950/40 text-blue-400 border-blue-500/30',
-            };
-        } else {
-            return {
-                label: 'Delivered',
-                icon: <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />,
-                badgeClass: 'bg-emerald-950/40 text-emerald-400 border-emerald-500/30',
-            };
+        switch (label) {
+            case 'Processing':
+                return {
+                    label,
+                    icon: <Clock className="w-3.5 h-3.5 text-slate-400" />,
+                    badgeClass: 'bg-slate-100 text-slate-600 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600',
+                };
+            case 'Shipped':
+                return {
+                    label,
+                    icon: <Truck className="w-3.5 h-3.5 text-blue-400" />,
+                    badgeClass: 'bg-blue-950/40 text-blue-400 border-blue-500/30',
+                };
+            case 'Delivered':
+                return {
+                    label,
+                    icon: <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />,
+                    badgeClass: 'bg-emerald-950/40 text-emerald-400 border-emerald-500/30',
+                };
         }
     };
 
@@ -180,7 +181,7 @@ export default function OrdersPage() {
                         <OrderCard 
                             key={order.id} 
                             order={order} 
-                            status={getOrderStatus(order.placedAt)} 
+                            status={getOrderStatus(order)} 
                             onCancel={handleCancelOrder}
                         />
                     ))}

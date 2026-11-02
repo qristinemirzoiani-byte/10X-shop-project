@@ -22,6 +22,9 @@
     const location = useLocation();
     const { user } = useAuth();
     const { addItems } = useCart();
+    const justPlaced = (
+        location.state as { justPlaced?: boolean } | null
+    )?.justPlaced === true;
 
     const order = useMemo<Order | null>(() => {
         try {
@@ -81,6 +84,16 @@
 
     return (
         <div className="space-y-8">
+        {justPlaced && (
+            <div
+                role="status"
+                className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300"
+            >
+                <CheckCircle2 className="h-5 w-5 shrink-0" />
+                <p>Thank you! Your order has been placed.</p>
+            </div>
+        )}
+
         {/* Top bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
             <div>
@@ -229,6 +242,12 @@
                 <h3 className="font-bold text-sm text-slate-900 dark:text-white pb-2 border-b border-slate-100 dark:border-slate-800">
                 Payment Summary
                 </h3>
+                <div className="flex justify-between gap-4 text-xs text-slate-600 dark:text-slate-400">
+                <span>Payment method</span>
+                <span className="text-right font-semibold text-slate-900 dark:text-white">
+                    {order.shipping.paymentMethod || 'Cash on delivery'}
+                </span>
+                </div>
                 <div className="flex justify-between text-xs text-slate-600 dark:text-slate-400">
                 <span>Subtotal</span>
                 <span className="font-semibold text-slate-900 dark:text-white">
