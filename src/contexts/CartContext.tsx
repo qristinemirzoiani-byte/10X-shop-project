@@ -11,6 +11,7 @@ interface CartContextType {
     state: CartState;
     cart: Cart;
     addItem: (product: Product, qty?: number) => boolean;
+    addItems: (items: Array<{ product: Product; qty: number }>) => boolean;
     setQuantity: (productId: number, qty: number) => void;
     removeItem: (productId: number) => void;
     clearCart: () => void;
@@ -82,6 +83,39 @@ const addItem = (product: Product, qty: number = 1): boolean => {
     return true;
 };
 
+const addItems = (items: Array<{ product: Product; qty: number }>): boolean => {
+    const additions = new Map<number, { product: Product; qty: number }>();
+
+    for (const { product, qty } of items) {
+        if (!Number.isInteger(qty) || qty <= 0 || !Number.isInteger(product.stock) || product.stock <= 0) {
+            showToast('Unable to reorder: one or more items are unavailable', 'error');
+            return false;
+        }
+
+        const existingAddition = additions.get(product.id);
+        additions.set(product.id, {
+            product: existingAddition
+                ? { ...product, stock: Math.min(product.stock, existingAddition.product.stock) }
+                : product,
+            qty: (existingAddition?.qty ?? 0) + qty,
+        });
+    }
+
+    for (const { product, qty } of additions.values()) {
+        const currentQty = state.items.find((item) => item.productId === product.id)?.quantity ?? 0;
+        if (currentQty + qty > product.stock) {
+            showToast(`Unable to reorder: available stock for ${product.title} is insufficient`, 'error');
+            return false;
+        }
+    }
+
+    for (const { product, qty } of additions.values()) {
+        dispatch({ type: 'ADD_ITEM', product, qty });
+    }
+    showToast('Items added to cart ✓', 'success');
+    return true;
+};
+
 const setQuantity = (productId: number, qty: number) => {
     const currentItem = state.items.find((i) => i.productId === productId);
     if (currentItem && currentItem.stock <= 0) {
@@ -130,6 +164,7 @@ return (
         state,
         cart,
         addItem,
+        addItems,
         setQuantity,
         removeItem,
         clearCart,

@@ -13,7 +13,6 @@
     import { STORAGE_KEYS } from '../models/StorageService';
     import { formatPrice, formatDate, discountedPrice } from '../utils/format';
     import { useCart } from '../contexts/CartContext';
-    import { useToast } from '../contexts/ToastContext';
     import { useAuth } from '../contexts/AuthContext';
     import NotFoundPage from '../pages/NotFoundPage';
 
@@ -22,8 +21,7 @@
     const navigate = useNavigate();
     const location = useLocation();
     const { user } = useAuth();
-    const { addItem } = useCart();
-    const { showToast } = useToast();
+    const { addItems } = useCart();
 
     const order = useMemo<Order | null>(() => {
         try {
@@ -57,9 +55,8 @@
     const currentStatus: OrderStatus = OrderModel.getStatus(order, currentTime);
 
     const handleReorder = () => {
-        order.items.forEach((item) => {
-        addItem(
-            {
+        const added = addItems(order.items.map((item) => ({
+            product: {
             id: item.productId,
             title: item.title,
             description: '',
@@ -72,10 +69,10 @@
             images: [item.thumbnail],
             reviews: [],
             },
-            item.quantity
-        );
-        });
-        showToast('Items added to cart ✓', 'success');
+            qty: item.quantity,
+        })));
+        if (!added) return;
+
         navigate('/cart');
     };
 
