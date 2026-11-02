@@ -43,7 +43,7 @@
     useEffect(() => {
         const timer = setInterval(() => {
         setCurrentTime(new Date());
-        }, 15000);
+        }, 30000);
         return () => clearInterval(timer);
     }, []);
 

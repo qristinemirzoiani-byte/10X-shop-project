@@ -25,7 +25,7 @@ export default function OrdersPage() {
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentTime(new Date());
-        }, 15000);
+        }, 30000);
 
         return () => clearInterval(interval);
     }, []);
