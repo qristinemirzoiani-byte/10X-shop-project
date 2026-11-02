@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-    type Theme = 'dark' | 'light';
+import { themeStorage } from '../models/StorageService';
+import type { Theme } from '../types/theme';
 
     interface ThemeContextType {
     theme: Theme;
@@ -10,7 +11,8 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 
     export function ThemeProvider({ children }: { children: ReactNode }) {
     const [theme, setTheme] = useState<Theme>(() => {
-        return (localStorage.getItem('shop_theme') as Theme) || 'dark';
+        const storedTheme = themeStorage.get();
+        return storedTheme === 'light' ? 'light' : 'dark';
     });
 
     // Save to localStorage when theme changes
@@ -23,7 +25,7 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
             root.classList.remove('dark');
             root.setAttribute('data-theme', 'light');
         }
-        localStorage.setItem('shop_theme', theme);
+        themeStorage.set(theme);
     }, [theme]);
 
     const toggleTheme = () => {
