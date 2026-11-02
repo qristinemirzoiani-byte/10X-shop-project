@@ -39,7 +39,7 @@
     export interface CatalogParams {
     q?: string;
     category?: string;
-    sort?: string;
+    sort?: SortOption;
     page?: number;
     limit?: number;
 }
@@ -51,3 +51,11 @@
     | 'price-desc'
     | 'rating-desc'
     | 'title-asc';
+
+    export function isSortOption(value: string | null): value is SortOption {
+    return value === ''
+        || value === 'price-asc'
+        || value === 'price-desc'
+        || value === 'rating-desc'
+        || value === 'title-asc';
+}

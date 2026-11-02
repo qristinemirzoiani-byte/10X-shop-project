@@ -1,6 +1,5 @@
     import { api } from './ApiClient';
-    import type { Product, ProductsResponse, Category } from '../types/products';
-    import type { CatalogParams } from '../types/api';
+    import type { Product, ProductsResponse, Category, CatalogParams } from '../types/products';
 
     export async function fetchProducts(
     params: CatalogParams = {},

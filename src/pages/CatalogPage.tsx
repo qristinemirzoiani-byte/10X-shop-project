@@ -1,6 +1,7 @@
     // pages/CatalogPage.tsx
     import { useState, useEffect } from 'react';
     import { useSearchParams } from 'react-router';
+    import { isSortOption } from '../types/products';
     import type { Product, SortOption } from '../types/products';
     import { fetchProducts } from '../api/products.api';
     import { ProductGrid } from '../product/ProductGrid';
@@ -18,7 +19,8 @@
     // Read state directly from URL
     const queryParam = searchParams.get('q') || '';
     const categoryParam = searchParams.get('category') || '';
-    const sortParam = (searchParams.get('sort') as SortOption) || '';
+    const rawSortParam = searchParams.get('sort');
+    const sortParam: SortOption = isSortOption(rawSortParam) ? rawSortParam : '';
     const rawPage = parseInt(searchParams.get('page') || '1', 10);
     const pageParam = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
 
@@ -153,7 +155,7 @@
         }
         : undefined;
 
-    const handleSortSelect = (val: string) => {
+    const handleSortSelect = (val: SortOption) => {
         setLoading(true);
         const nextParams = new URLSearchParams(searchParams);
         if (val) {

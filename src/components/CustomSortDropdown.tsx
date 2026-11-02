@@ -1,10 +1,11 @@
     import { useState, useRef, useEffect } from 'react';
     import { ArrowUpDown, Check } from 'lucide-react';
+    import type { SortOption } from '../types/products';
 
-    export interface SortOptionItem {
-    value: string;
-    label: string;
-    }
+        export interface SortOptionItem {
+        value: SortOption;
+        label: string;
+        }
 
     export const SORT_OPTIONS: SortOptionItem[] = [
     { value: '', label: 'Default sorting' },
@@ -15,8 +16,8 @@
     ];
 
     interface CustomSortDropdownProps {
-    value: string;
-    onChange: (value: string) => void;
+        value: SortOption;
+        onChange: (value: SortOption) => void;
     }
 
     export function CustomSortDropdown({ value, onChange }: CustomSortDropdownProps) {
@@ -45,7 +46,7 @@
         };
     }, [isOpen]);
 
-    const handleSelect = (val: string) => {
+    const handleSelect = (val: SortOption) => {
         onChange(val);
         setIsOpen(false);
     };
