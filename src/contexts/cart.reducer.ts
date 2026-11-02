@@ -51,16 +51,11 @@ import type { Product } from '../types/products';
 
         case 'SET_QTY': {
         const { productId, qty } = action;
-        if (qty <= 0) {
-            return {
-            ...state,
-            items: state.items.filter((i) => i.productId !== productId),
-            };
-        }
+        const sanitizedQty = Math.max(1, qty);
 
         const updated = state.items.map((item) => {
             if (item.productId === productId) {
-            const clamped = Math.min(qty, item.stock);
+            const clamped = Math.min(sanitizedQty, item.stock);
             return { ...item, quantity: clamped };
             }
             return item;
