@@ -1,6 +1,6 @@
     import { useState } from 'react';
-    import { Link } from 'react-router';
-    import { CheckCircle2, PackageCheck, ShoppingBag, AlertCircle } from 'lucide-react';
+    import { Link, Navigate } from 'react-router';
+    import { CheckCircle2, PackageCheck, ShoppingBag, } from 'lucide-react';
     import { useAuth } from '../contexts/AuthContext';
     import { useCart } from '../contexts/CartContext';
     import { OrderModel } from '../models/Order';
@@ -129,24 +129,14 @@
 
     // If cart is empty
     if (state.items.length === 0) {
-        return (
-        <div className="max-w-md mx-auto py-16 text-center space-y-4">
-            <AlertCircle className="w-12 h-12 text-amber-500 mx-auto" />
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-            Your cart is empty
-            </h2>
-            <p className="text-xs text-slate-500">
-            You cannot checkout without items. Please add some products to your cart first.
-            </p>
-            <Link
-            to="/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs cursor-pointer"
-            >
-            Go to catalog
-            </Link>
-        </div>
-        );
-    }
+    return (
+        <Navigate
+            to="/cart"
+            replace
+            state={{ message: 'Your cart is empty. Add products before checking out.' }}
+        />
+    );
+}
 
     return (
         <div className="space-y-8">

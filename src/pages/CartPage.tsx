@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { ShoppingCart, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { CartSummary } from '../cart/CartSummary';
@@ -7,6 +7,10 @@ import { CartItem } from '../cart/CartItem';
 export default function CartPage() {
     const { state, setQuantity, removeItem, clearCart } = useCart();
     const navigate = useNavigate();
+    const location = useLocation();
+    const redirectMessage = (
+            location.state as { message?: string } | null
+        )?.message;
 
     const handleClearCart = () => {
         if (window.confirm('Clear the cart? This cannot be undone.')) {
@@ -29,7 +33,8 @@ export default function CartPage() {
                         Your cart is empty.
                     </h2>
                     <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-                        Looks like you haven't added anything to your cart yet. Explore our catalog to find great deals!
+                        {redirectMessage ??
+                            "Looks like you haven't added anything to your cart yet. Explore our catalog to find great deals!"}
                     </p>
                 </div>
                 <div>
