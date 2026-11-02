@@ -59,3 +59,41 @@
         || value === 'rating-desc'
         || value === 'title-asc';
 }
+
+    export function isProduct(value: unknown): value is Product {
+    if (typeof value !== 'object' || value === null) return false;
+    const product = value as Record<string, unknown>;
+
+    return Number.isInteger(product.id)
+        && typeof product.title === 'string'
+        && typeof product.description === 'string'
+        && typeof product.category === 'string'
+        && (product.brand === undefined || typeof product.brand === 'string')
+        && typeof product.price === 'number'
+        && typeof product.discountPercentage === 'number'
+        && typeof product.rating === 'number'
+        && Number.isInteger(product.stock)
+        && typeof product.thumbnail === 'string'
+        && Array.isArray(product.images)
+        && product.images.every((image) => typeof image === 'string')
+        && Array.isArray(product.reviews)
+        && product.reviews.every((review) => {
+            if (typeof review !== 'object' || review === null) return false;
+            const candidate = review as Record<string, unknown>;
+            return typeof candidate.rating === 'number'
+                && typeof candidate.comment === 'string'
+                && typeof candidate.date === 'string'
+                && typeof candidate.reviewerName === 'string';
+        });
+}
+
+    export function isProductsResponse(value: unknown): value is ProductsResponse {
+    if (typeof value !== 'object' || value === null) return false;
+    const response = value as Record<string, unknown>;
+
+    return Array.isArray(response.products)
+        && response.products.every(isProduct)
+        && typeof response.total === 'number'
+        && typeof response.skip === 'number'
+        && typeof response.limit === 'number';
+}

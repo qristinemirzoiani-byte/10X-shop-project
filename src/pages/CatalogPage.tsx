@@ -1,9 +1,10 @@
     // pages/CatalogPage.tsx
-    import { useState, useEffect } from 'react';
+    import { useCallback } from 'react';
     import { useSearchParams } from 'react-router';
     import { isSortOption } from '../types/products';
-    import type { Product, SortOption } from '../types/products';
+    import type { ProductsResponse, SortOption } from '../types/products';
     import { fetchProducts } from '../api/products.api';
+    import { useFetch } from '../hooks/useFetch';
     import { ProductGrid } from '../product/ProductGrid';
     import { Pagination } from '../components/Pagination';
     import { SkeletonCard } from '../product/CatalogSkeleton';
@@ -24,32 +25,12 @@
     const rawPage = parseInt(searchParams.get('page') || '1', 10);
     const pageParam = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
 
-    // API Data state
-    const [products, setProducts] = useState<Product[]>([]);
-    const [total, setTotal] = useState(0);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [retryKey, setRetryKey] = useState(0);
-
-    // Sync loading state during render when URL params change (prevents react-hooks/set-state-in-effect lint error)
-    const currentParamsKey = `${queryParam}|${categoryParam}|${sortParam}|${pageParam}|${retryKey}`;
-    const [prevParamsKey, setPrevParamsKey] = useState(currentParamsKey);
-
-    if (prevParamsKey !== currentParamsKey) {
-        setPrevParamsKey(currentParamsKey);
-    setLoading(true);
-        setError(null);
-    }
-
     const limit = 12;
     const { theme } = useTheme();
     const { addItem } = useCart();
-
-    useEffect(() => {
-        let ignore = false;
-        const controller = new AbortController();
-
-        fetchProducts(
+    const requestKey = `${queryParam}|${categoryParam}|${sortParam}|${pageParam}`;
+    const loadProducts = useCallback(
+        (signal: AbortSignal) => fetchProducts(
         {
             q: queryParam,
             category: categoryParam,
@@ -57,38 +38,23 @@
             page: pageParam,
             limit,
         },
-        controller.signal
-        )
-        .then((data) => {
-            if (!ignore) {
-            setProducts(data.products || []);
-            setTotal(data.total || 0);
-            setError(null);
-            setLoading(false);
-            }
-        })
-        .catch((err) => {
-            if (!ignore && err.name !== 'AbortError') {
-            setError(err.message || 'Failed to load products');
-            setLoading(false);
-            }
-        });
-
-        return () => {
-        ignore = true;
-        controller.abort();
-        };
-    }, [queryParam, categoryParam, sortParam, pageParam, retryKey]);
+        signal
+        ),
+        [queryParam, categoryParam, sortParam, pageParam, limit],
+    );
+    const { state: productsState, retry } = useFetch<ProductsResponse>(requestKey, loadProducts);
+    const loading = productsState.status === 'loading' || productsState.status === 'idle';
+    const error = productsState.status === 'error' ? productsState.message : null;
+    const products = productsState.status === 'success' ? productsState.data.products : [];
+    const total = productsState.status === 'success' ? productsState.data.total : 0;
 
     const handlePageChange = (newPage: number) => {
-        setLoading(true);
         const nextParams = new URLSearchParams(searchParams);
         nextParams.set('page', String(newPage));
         setSearchParams(nextParams);
     };
 
     const handleClearFilters = () => {
-        setLoading(true);
         setSearchParams({});
     };
 
@@ -156,7 +122,6 @@
         : undefined;
 
     const handleSortSelect = (val: SortOption) => {
-        setLoading(true);
         const nextParams = new URLSearchParams(searchParams);
         if (val) {
         nextParams.set('sort', val);
@@ -222,10 +187,7 @@
         ) : error ? (
             <CatalogError
             error={error}
-            onRetry={() => {
-                setLoading(true);
-                setRetryKey((k) => k + 1);
-            }}
+            onRetry={retry}
             />
         ) : products.length === 0 ? (
             <CatalogEmpty />

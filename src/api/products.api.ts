@@ -1,50 +1,21 @@
     import { api } from './ApiClient';
+    import { ApiError } from './ApiError';
+    import { isProduct, isProductsResponse } from '../types/products';
     import type { Product, ProductsResponse, Category, CatalogParams } from '../types/products';
+    import { buildProductsUrl } from '../utils/url';
 
     export async function fetchProducts(
     params: CatalogParams = {},
     signal?: AbortSignal
     ): Promise<ProductsResponse> {
-    const limit = params.limit ?? 12;
-    const page = typeof params.page === 'number' && !Number.isNaN(params.page) && params.page > 0 ? params.page : 1;
-    const skip = (page - 1) * limit;
-
-    const searchParams = new URLSearchParams();
-    searchParams.set('limit', String(limit));
-    searchParams.set('skip', String(skip));
-
-    if (params.sort) {
-        if (params.sort === 'price-asc') {
-        searchParams.set('sortBy', 'price');
-        searchParams.set('order', 'asc');
-        } else if (params.sort === 'price-desc') {
-        searchParams.set('sortBy', 'price');
-        searchParams.set('order', 'desc');
-        } else if (params.sort === 'rating-desc') {
-        searchParams.set('sortBy', 'rating');
-        searchParams.set('order', 'desc');
-        } else if (params.sort === 'title-asc') {
-        searchParams.set('sortBy', 'title');
-        searchParams.set('order', 'asc');
-        }
+    const path = buildProductsUrl(params);
+    const response = await api.get<unknown>(path, signal);
+    if (!isProductsResponse(response)) {
+        throw new ApiError(502, 'The products service returned invalid data.');
     }
-
-    if (params.q?.trim()) {
-        searchParams.set('q', params.q.trim());
-    }
-
-    const endpoint = params.q?.trim()
-        ? '/products/search'
-        : params.category?.trim()
-        ? `/products/category/${encodeURIComponent(params.category.trim())}`
-        : '/products';
-
-    const path = `${endpoint}?${searchParams.toString()}`;
-
-    const response = await api.get<ProductsResponse>(path, signal);
 
     // Fallback client-side sort if API didn't sort correctly for some endpoints
-    if (params.sort && response.products) {
+    if (params.sort) {
         const sorted = [...response.products];
         if (params.sort === 'price-asc') {
         sorted.sort((a, b) => a.price - b.price);
@@ -62,7 +33,11 @@
     }
 
     export async function fetchProductById(id: number, signal?: AbortSignal): Promise<Product> {
-    return api.get<Product>(`/products/${id}`, signal);
+    const product: unknown = await api.get<unknown>(`/products/${id}`, signal);
+    if (!isProduct(product)) {
+        throw new ApiError(502, 'The product service returned invalid data.');
+    }
+    return product;
     }
 
     export async function fetchCategories(signal?: AbortSignal): Promise<Category[]> {
@@ -85,10 +60,7 @@
     signal?: AbortSignal
     ): Promise<Product[]> {
     try {
-        const res = await api.get<ProductsResponse>(
-        `/products/category/${encodeURIComponent(category)}?limit=5`,
-        signal
-        );
+        const res = await fetchProducts({ category, limit: 5 }, signal);
         return res.products.filter((p) => p.id !== currentProductId).slice(0, 4);
     } catch {
         return [];

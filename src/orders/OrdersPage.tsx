@@ -6,20 +6,13 @@ import { OrderCard } from '../orders/OrderCard';
 import type { Order } from '../types/order';
 import { OrderModel } from '../models/Order';
 import { STORAGE_KEYS } from '../models/StorageService';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 export default function OrdersPage() {
     const { user } = useAuth();
     const isAuthenticated = user.isLoggedIn;
 
-    const [orders, setOrders] = useState<Order[]>(() => {
-        try {
-            const stored = localStorage.getItem(STORAGE_KEYS.orders);
-            return stored ? JSON.parse(stored) : [];
-        } catch (e) {
-            console.error('Failed to load orders', e);
-            return [];
-        }
-    });
+    const [orders, setOrders] = useLocalStorage<Order[]>(STORAGE_KEYS.orders, []);
 
     const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
@@ -101,21 +94,18 @@ export default function OrdersPage() {
 
         const updated = [mockOrder, ...orders];
         setOrders(updated);
-        localStorage.setItem(STORAGE_KEYS.orders, JSON.stringify(updated));
     };
 
     const handleCancelOrder = (orderId: number) => {
         if (window.confirm('Are you sure you want to cancel this order?')) {
             const updated = orders.filter((o) => o.id !== orderId);
             setOrders(updated);
-            localStorage.setItem(STORAGE_KEYS.orders, JSON.stringify(updated));
         }
     };
 
     const handleClearAllOrders = () => {
         if (window.confirm('Clear all orders from history?')) {
             setOrders([]);
-            localStorage.removeItem(STORAGE_KEYS.orders);
         }
     };
 
