@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, type SyntheticEvent } from 'react';
 import { useNavigate, useParams, Link } from 'react-router';
 import { AlertCircle, ArrowLeft, Minus, Plus, ShoppingCart, Star } from 'lucide-react';
-import { ApiError } from '../api/ApiError';
+import { isApiError } from '../api/ApiError';
 import { fetchProductById, fetchRelatedProducts } from '../api/products.api';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
@@ -105,7 +105,7 @@ export default function ProductPage() {
                 setNotFound(false);
             } catch (cause) {
                 if (controller.signal.aborted) return;
-                if (cause instanceof ApiError && cause.status === 404) {
+                if (isApiError(cause) && cause.status === 404) {
                     setNotFound(true);
                 } else {
                     setError(cause instanceof Error ? cause.message : 'Failed to load product.');
