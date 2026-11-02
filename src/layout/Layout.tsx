@@ -24,9 +24,24 @@
     }, [location.pathname]);
 
     // Category determination for active background styling:
-    // City background: 'all products', 'laptops & tech', 'smartphones', 'furniture'
-    // Floral background: 'beauty & makeup', 'fragrances', 'groceries'
-    const isBeautyOrGroceries = ['beauty', 'fragrances', 'groceries', 'beauty-and-makeup'].includes(category);
+  // Floral background: beauty, fragrances, skin-care, groceries, and all women's categories
+  // City/cyber background: tech, laptops, smartphones, vehicle, motorcycle, men's, furniture, all
+    const floralCategories = [
+        'beauty',
+        'fragrances',
+        'groceries',
+        'beauty-and-makeup',
+        'skin-care',
+        'womens-dresses',
+        'womens-shoes',
+        'womens-watches',
+        'womens-bags',
+        'womens-jewellery',
+        'tops',
+    ];
+    const isBeautyOrGroceries = floralCategories.some(
+        (c) => category === c || category.startsWith('womens')
+    );
     const isTechOrAll = !isBeautyOrGroceries;
 
     // Asset paths (direct bundled imports first, then public fallbacks, and reliable online fallback)

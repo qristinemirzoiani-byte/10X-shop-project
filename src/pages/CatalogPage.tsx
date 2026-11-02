@@ -7,10 +7,10 @@
     import { Pagination } from '../components/Pagination';
     import { SkeletonCard } from '../product/CatalogSkeleton';
     import { CustomSortDropdown } from '../components/CustomSortDropdown';
-    import { CategoryFilter } from '../product/CategoryFilter';
     import { CatalogEmpty } from '../product/CatalogEmpty';
     import { CatalogError } from '../product/CatalogError';
     import { useTheme } from '../contexts/ThemeContext';
+    import { useCart } from '../contexts/CartContext';
 
     export default function CatalogPage() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -41,6 +41,7 @@
 
     const limit = 12;
     const { theme } = useTheme();
+    const { addItem } = useCart();
 
     useEffect(() => {
         let ignore = false;
@@ -94,14 +95,45 @@
     const endItem = Math.min(pageParam * limit, total);
 
     // Category thematic backgrounds
+    // Category-specific thematic backdrop images behind the products panel:
     const categoryBackgrounds: Record<string, string> = {
-        smartphones: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1600&auto=format&fit=crop',
-        laptops: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1600&auto=format&fit=crop',
-        beauty: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1600&auto=format&fit=crop',
-        'beauty-and-makeup': 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1600&auto=format&fit=crop',
-        fragrances: 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=1600&auto=format&fit=crop',
-        furniture: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1600&auto=format&fit=crop',
-        groceries: 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1600&auto=format&fit=crop',
+    // tech & electronics 💻 📱
+    smartphones: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1600&auto=format&fit=crop',
+    laptops: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1600&auto=format&fit=crop',
+    tablets: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=1600&auto=format&fit=crop',
+    'mobile-accessories': 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1600&auto=format&fit=crop',
+
+    // cars and motorcycles 🏎️ 🏍️
+    vehicle: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1600&auto=format&fit=crop',
+    motorcycle: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1600&auto=format&fit=crop',
+
+    // parfum and beauty🌸
+    beauty: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1600&auto=format&fit=crop',
+    'beauty-and-makeup': 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1600&auto=format&fit=crop',
+    'skin-care': 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=1600&auto=format&fit=crop',
+    fragrances: 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=1600&auto=format&fit=crop',
+
+    // furniture & home decoration 🛋️
+    furniture: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1600&auto=format&fit=crop',
+    'home-decoration': 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1600&auto=format&fit=crop',
+    'kitchen-accessories': 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=1600&auto=format&fit=crop',
+    groceries: 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1600&auto=format&fit=crop',
+
+    // women's fashion & accessories 👗 👠
+    'womens-dresses': 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1600&auto=format&fit=crop',
+    'womens-shoes': 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?q=80&w=1600&auto=format&fit=crop',
+    'womens-watches': 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?q=80&w=1600&auto=format&fit=crop',
+    'womens-bags': 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1600&auto=format&fit=crop',
+    'womens-jewellery': 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=1600&auto=format&fit=crop',
+    tops: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?q=80&w=1600&auto=format&fit=crop',
+
+    // men's fashion & accessories 👔
+    'mens-shirts': 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=1600&auto=format&fit=crop',
+    'mens-shoes': 'https://images.unsplash.com/photo-1449505278894-297fdb3edbc1?q=80&w=1600&auto=format&fit=crop',
+'mens-watches': 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?q=80&w=1600&auto=format&fit=crop',
+    // sports & eyewear 🕶️ 🏋️
+    'sports-accessories': 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1600&auto=format&fit=crop',
+    sunglasses: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=1600&auto=format&fit=crop',
     };
 
     const catBgUrl = categoryParam ? categoryBackgrounds[categoryParam.toLowerCase()] : null;
@@ -177,8 +209,6 @@
             </div>
         </div>
 
-        {/* Category Filter Component */}
-        <CategoryFilter activeCategory={categoryParam} className="pb-1" />
 
         {/* Main Content Area */}
         {loading ? (
@@ -196,10 +226,10 @@
             }}
             />
         ) : products.length === 0 ? (
-            <CatalogEmpty onClear={handleClearFilters} />
+            <CatalogEmpty />
         ) : (
             <>
-            <ProductGrid products={products} />
+            <ProductGrid products={products} onAdd={addItem} />
             <Pagination
                 page={pageParam}
                 totalPages={totalPages}

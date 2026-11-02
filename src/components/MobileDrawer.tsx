@@ -1,5 +1,6 @@
     import { NavLink } from 'react-router';
     import { User, LogOut, LogIn } from 'lucide-react';
+    import { SearchBar } from './SearchBar'; // <-- შემოტანილია SearchBar
 
     interface MobileDrawerProps {
     isOpen?: boolean;
@@ -28,7 +29,12 @@
         }`;
 
     return (
-        <div className="md:hidden border-t border-slate-800 bg-slate-900/95 backdrop-blur-md px-4 pt-3 pb-6 space-y-2 animate-in slide-in-from-top-2">
+        <div className="md:hidden border-t border-slate-800 bg-slate-900/95 backdrop-blur-md px-4 pt-3 pb-6 space-y-3 animate-in slide-in-from-top-2">
+        {/* Search Bar  for Mobile */}
+        <div className="pb-2 border-b border-slate-800/80">
+            <SearchBar onSearchSubmit={onClose} />
+        </div>
+
         <NavLink to="/" end onClick={onClose} className={linkStyle}>
             Catalog
         </NavLink>

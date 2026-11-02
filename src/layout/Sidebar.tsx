@@ -1,13 +1,30 @@
-    import { useSearchParams, useNavigate, useLocation } from 'react-router';
-    import {
+import { useEffect, useState } from 'react';
+import { useSearchParams, useNavigate, useLocation } from 'react-router';
+import {
     Sparkles,
     Laptop,
     Smartphone,
+    Tablet,
     Sparkle,
     Flower2,
     Armchair,
+    Home,
     ShoppingBasket,
-    } from 'lucide-react';
+    ShoppingBag,
+    Tag,
+    Car,
+    Bike,
+    Utensils,
+    Shirt,
+    Footprints,
+    Watch,
+    Gem,
+    Glasses,
+    Trophy,
+    Headphones,
+    Droplets,
+} from 'lucide-react';
+    import { fetchCategories } from '../api/products.api';
 
     export interface CategoryItem {
     id: string;
@@ -25,6 +42,59 @@
     { id: 'groceries', name: 'Groceries', icon: ShoppingBasket },
     ];
 
+function getCategoryIcon(id: string): CategoryItem['icon'] {
+    switch (id.toLowerCase()) {
+        case 'all':
+        return Sparkles;
+        case 'laptops':
+        return Laptop;
+        case 'tablets':
+        return Tablet;
+        case 'smartphones':
+        return Smartphone;
+        case 'mobile-accessories':
+        return Headphones;
+        case 'vehicle':
+        return Car;
+        case 'motorcycle':
+        return Bike;
+        case 'beauty':
+        return Sparkle;
+        case 'skin-care':
+        return Droplets;
+        case 'fragrances':
+        return Flower2;
+        case 'furniture':
+        return Armchair;
+        case 'home-decoration':
+        return Home;
+        case 'kitchen-accessories':
+        return Utensils;
+        case 'groceries':
+        return ShoppingBasket;
+        case 'mens-shirts':
+        case 'tops':
+        return Shirt;
+        case 'mens-shoes':
+        case 'womens-shoes':
+        return Footprints;
+        case 'mens-watches':
+        case 'womens-watches':
+        return Watch;
+        case 'womens-dresses':
+        return Sparkles;
+        case 'womens-bags':
+        return ShoppingBag;
+        case 'womens-jewellery':
+        return Gem;
+        case 'sunglasses':
+        return Glasses;
+        case 'sports-accessories':
+        return Trophy;
+        default:
+        return Tag;
+    }
+}
     interface SidebarProps {
     className?: string;
     onSelectCategory?: (categoryId: string) => void;
@@ -34,9 +104,39 @@
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const location = useLocation();
+        const [categories, setCategories] = useState<CategoryItem[]>(CATEGORIES);
 
-    // Active category derived from URL query params (default to 'all' if omitted)
-    const activeCategoryId = searchParams.get('category') || 'all';
+        // Active category derived from URL query params (default to 'all' if omitted)
+        const activeCategoryId = searchParams.get('category') || 'all';
+
+        useEffect(() => {
+            const controller = new AbortController();
+            let ignore = false;
+
+            fetchCategories(controller.signal)
+                .then((data) => {
+                    if (!ignore && data.length > 0) {
+                        setCategories([
+                            { id: 'all', name: 'All Products', icon: Sparkles },
+                            ...data.map((category) => ({
+                                id: category.slug,
+                                name: category.name,
+                                icon: getCategoryIcon(category.slug),
+                            })),
+                        ]);
+                    }
+                })
+                .catch((error: unknown) => {
+                    if (!ignore && !(error instanceof Error && error.name === 'AbortError')) {
+                        console.warn('Failed to load sidebar categories; using defaults:', error);
+                    }
+                });
+
+            return () => {
+                ignore = true;
+                controller.abort();
+            };
+        }, []);
 
     const handleCategoryClick = (categoryId: string) => {
         if (onSelectCategory) {
@@ -46,11 +146,11 @@
 
         // Sync selected category with URL query parameters
         const nextParams = new URLSearchParams(searchParams);
+        nextParams.delete('q');
         if (categoryId === 'all') {
         nextParams.delete('category');
         } else {
         nextParams.set('category', categoryId);
-        nextParams.delete('q'); // Clear search query when filtering by category
         }
         nextParams.set('page', '1');
 
@@ -75,7 +175,7 @@
 
         {/* Categories Navigation List */}
         <nav className="space-y-1.5 flex-1" aria-label="Sidebar categories">
-            {CATEGORIES.map((cat) => {
+            {categories.map((cat) => {
             const Icon = cat.icon;
             // Match active state by stable unique ID instead of array index
             const isActive = activeCategoryId === cat.id;

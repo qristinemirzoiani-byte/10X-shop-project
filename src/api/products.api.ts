@@ -87,7 +87,7 @@
     ): Promise<Product[]> {
     try {
         const res = await api.get<ProductsResponse>(
-        `/products/category/${encodeURIComponent(category)}?limit=8`,
+        `/products/category/${encodeURIComponent(category)}?limit=5`,
         signal
         );
         return res.products.filter((p) => p.id !== currentProductId).slice(0, 4);

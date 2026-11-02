@@ -1,4 +1,4 @@
-    import React from 'react';
+    import React, { useState, useEffect } from 'react';
     import { useSearchParams } from 'react-router';
     import {
     Sparkles,
@@ -8,15 +8,17 @@
     Flower2,
     Armchair,
     ShoppingBasket,
+    Tag,
     } from 'lucide-react';
+    import { fetchCategories } from '../api/products.api';
 
     export interface CategoryOption {
     id: string;
     name: string;
-    icon: React.ComponentType<{ className?: string }>;
+    icon?: React.ComponentType<{ className?: string }>;
     }
 
-    export const CATEGORY_OPTIONS: CategoryOption[] = [
+    export const DEFAULT_CATEGORY_OPTIONS: CategoryOption[] = [
     { id: 'all', name: 'All Products', icon: Sparkles },
     { id: 'laptops', name: 'Laptops & Tech', icon: Laptop },
     { id: 'smartphones', name: 'Smartphones', icon: Smartphone },
@@ -25,6 +27,21 @@
     { id: 'furniture', name: 'Furniture', icon: Armchair },
     { id: 'groceries', name: 'Groceries', icon: ShoppingBasket },
     ];
+
+    export const CATEGORY_OPTIONS = DEFAULT_CATEGORY_OPTIONS;
+
+    const getCategoryIcon = (id: string): React.ComponentType<{ className?: string }> => {
+    switch (id.toLowerCase()) {
+        case 'all': return Sparkles;
+        case 'laptops': return Laptop;
+        case 'smartphones': return Smartphone;
+        case 'beauty': case 'skin-care': return Sparkle;
+        case 'fragrances': return Flower2;
+        case 'furniture': case 'home-decoration': return Armchair;
+        case 'groceries': return ShoppingBasket;
+        default: return Tag;
+    }
+    };
 
     export interface CategoryFilterProps {
     activeCategory?: string;
@@ -38,9 +55,38 @@
     className = '',
     }: CategoryFilterProps) {
     const [searchParams, setSearchParams] = useSearchParams();
+    const [categories, setCategories] = useState<CategoryOption[]>(DEFAULT_CATEGORY_OPTIONS);
 
-    // Resolve category: if activeCategory is empty string, undefined or null, read from URL.
-    // If still empty or 'all', default to 'all'.
+    useEffect(() => {
+        let ignore = false;
+        const controller = new AbortController();
+
+        fetchCategories(controller.signal)
+        .then((data) => {
+            if (!ignore && data?.length) {
+            const loaded: CategoryOption[] = data.map((c) => ({
+                id: c.slug,
+                name: c.name,
+                icon: getCategoryIcon(c.slug),
+            }));
+            setCategories([
+                { id: 'all', name: 'All Products', icon: Sparkles },
+                ...loaded,
+            ]);
+            }
+        })
+        .catch((err) => {
+            if (!ignore && err.name !== 'AbortError') {
+            console.warn('Using default categories fallback:', err);
+            }
+        });
+
+        return () => {
+        ignore = true;
+        controller.abort();
+        };
+    }, []);
+
     const rawCategory =
         activeCategory !== undefined && activeCategory !== null && activeCategory.trim() !== ''
         ? activeCategory
@@ -70,8 +116,8 @@
 
     return (
         <div className={`flex flex-wrap gap-2 ${className}`}>
-        {CATEGORY_OPTIONS.map((cat) => {
-            const Icon = cat.icon;
+        {categories.map((cat) => {
+            const Icon = cat.icon || Tag;
             const isActive = currentCategory.toLowerCase() === cat.id.toLowerCase();
 
             return (
@@ -92,6 +138,6 @@
         })}
         </div>
     );
-}
+    }
 
 export default CategoryFilter;

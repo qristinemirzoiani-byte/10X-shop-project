@@ -1,39 +1,53 @@
-    import { useState, useEffect } from 'react';
+    import { useState, useEffect, useRef } from 'react';
     import { useSearchParams, useNavigate, useLocation } from 'react-router';
     import { Search, X } from 'lucide-react';
+    import { useDebounce } from '../hooks/useDebounce';
 
-    export function SearchBar() {
-    const [searchParams] = useSearchParams();
+    interface SearchBarProps {
+        onSearchSubmit?: () => void;
+    }
+
+    export function SearchBar({ onSearchSubmit }: SearchBarProps) {
+        const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const location = useLocation();
 
-    const queryInUrl = searchParams.get('q') || '';
-    const [term, setTerm] = useState(queryInUrl);
-    const [prevQuery, setPrevQuery] = useState(queryInUrl);
+        const queryInUrl = searchParams.get('q') || '';
+        const [term, setTerm] = useState(queryInUrl);
+        const debouncedTerm = useDebounce(term, 400);
+        const submittedQuery = useRef<string | null>(null);
 
-    // Sync with URL during render without synchronous setState in useEffect
-    if (prevQuery !== queryInUrl) {
-        setPrevQuery(queryInUrl);
-        setTerm(queryInUrl);
-    }
-
-    // 400ms Debounce
-    useEffect(() => {
-        const timer = setTimeout(() => {
-        const trimmed = term.trim();
-        const currentQ = searchParams.get('q') || '';
-
-        if (trimmed !== currentQ) {
-            if (trimmed) {
-            navigate(`/?q=${encodeURIComponent(trimmed)}&page=1`);
-            } else if (location.pathname === '/' && currentQ) {
-            navigate('/');
+        useEffect(() => {
+            if (submittedQuery.current === queryInUrl) {
+                submittedQuery.current = null;
+                return;
             }
-        }
-        }, 400);
+            setTerm(queryInUrl);
+        }, [queryInUrl]);
 
-        return () => clearTimeout(timer);
-    }, [term, searchParams, navigate, location.pathname]);
+        useEffect(() => {
+            const trimmed = debouncedTerm.trim();
+            const currentQ = searchParams.get('q') || '';
+
+        if (trimmed === term.trim() && trimmed !== currentQ) {
+            const nextParams = new URLSearchParams(searchParams);
+            if (trimmed) {
+                nextParams.set('q', trimmed);
+            nextParams.delete('category');
+        } else {
+            nextParams.delete('q');
+        }
+        nextParams.set('page', '1');
+        submittedQuery.current = trimmed;
+
+        if (location.pathname !== '/') {
+            navigate(`/?${nextParams.toString()}`);
+        } else {
+            setSearchParams(nextParams);
+        }
+        onSearchSubmit?.();
+        }
+    }, [debouncedTerm, location.pathname, navigate, onSearchSubmit, searchParams, setSearchParams, term]);
 
     const handleClear = () => {
         setTerm('');

@@ -56,4 +56,29 @@
 
 3. **Browser Native Password Reveal Duplication**:
    - *Cause*: Windows/Chromium default password reveal button conflicted with custom toggle eye icon.
-   - *Resolution*: Added CSS pseudo-element rule `input::-ms-reveal { display: none; }`.
+   - *Resolution*: Added CSS pseudo-element rule `input::-ms-reveal { display: none; }
+   
+   `.
+
+   ---
+
+### Case 5: Client-Side Sorting Fallback Compromise on Paginated Results (API Limitation / Architecture Trade-Off)
+- **Symptom**: Upstream DummyJSON API does not reliably support server-side multi-parameter combinations (e.g. `/products/search?q=...` or specific `/products/category/...` combined with `sortBy` and `order`). In some environments or query combinations, the upstream API ignores `sortBy`/`order` parameters and returns items in default insertion order.
+- **Reproduction**:
+  1. Trigger search query with sort option: `/products/search?q=phone&sortBy=price&order=asc`.
+  2. Inspect API response; observe items are not ordered strictly by price.
+- **Tool**: Network inspector / REST API contract verification with DummyJSON.
+- **Root Cause & Limitation**: The third-party DummyJSON API documentation notes that `sortBy` and `order` query params are only guaranteed on the primary `/products` endpoint. Combined endpoints (`/products/search` or older mock handlers) do not perform full-database server-side ordering.
+- **Architectural Compromise / Fallback**:
+  In `products.api.ts`, a client-side sort fallback was implemented:
+  ```typescript
+  if (params.sort && response.products) {
+    const sorted = [...response.products];
+    if (params.sort === 'price-asc') sorted.sort((a, b) => a.price - b.price);
+    else if (params.sort === 'price-desc') sorted.sort((a, b) => b.price - a.price);
+    else if (params.sort === 'rating-desc') sorted.sort((a, b) => b.rating - a.rating);
+    else if (params.sort === 'title-asc') sorted.sort((a, b) => a.title.localeCompare(b.title));
+    return { ...response, products: sorted };
+  }
+  ```
+- **Why this is a compromise, not a complete replacement for server-side sorting**: the API response is paginated before this fallback runs, so the fallback only sorts the current page. If the server ignores `sortBy` and `order`, items across different pages are not guaranteed to be globally ordered. Server-side sorting should remain enabled; this client-side sort only makes the visible page deterministic.

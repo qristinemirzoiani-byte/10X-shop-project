@@ -47,10 +47,10 @@
         <NavLink
         to="/login"
         className={({ isActive }) =>
-            `h-10 flex items-center gap-2 px-5 text-xs font-bold text-white rounded-xl transition shadow-lg shadow-pink-600/20 active:scale-95 cursor-pointer ${
+            `h-10 flex items-center gap-2 px-5 text-xs font-bold text-white rounded-xl border transition shadow-[0_0_15px_rgba(244,63,94,0.12)] active:scale-95 cursor-pointer ${
             isActive
-                ? 'bg-pink-500/40 border border-pink-300 shadow-[0_0_20px_rgba(244,63,94,0.35)]'
-                : 'bg-linear-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500'
+                ? 'bg-pink-500/40 border-pink-300 shadow-[0_0_20px_rgba(244,63,94,0.35)]'
+                : 'bg-pink-500/25 hover:bg-pink-500/35 border-pink-400/50'
             }`
         }
         >
