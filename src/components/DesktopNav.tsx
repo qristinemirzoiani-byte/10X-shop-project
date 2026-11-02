@@ -14,7 +14,7 @@
         }`;
 
     return (
-        <nav className="hidden md:flex items-center gap-2 pl-4 flex-1">
+        <nav className="hidden md:flex items-center gap-2 pl-4 shrink-0">
         <NavLink to="/" end className={navStyle}>
             Catalog
         </NavLink>

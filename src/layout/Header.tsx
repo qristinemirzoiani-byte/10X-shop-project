@@ -13,7 +13,7 @@
     import { MobileDrawer } from '../components/MobileDrawer';
 
     export function Header() {
-    const { user, logout } = useAuth();
+    const { user, logout } = useAuth(); 
     const { cart } = useCart();
     const navigate = useNavigate();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -30,6 +30,7 @@
         <header className="sticky top-0 z-40 bg-transparent border-none transition-colors">
         <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16 gap-3">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
             {/* Logo */}
             <Logo onClick={() => setMobileMenuOpen(false)} />
 
@@ -37,10 +38,10 @@
             <DesktopNav isLoggedIn={user.isLoggedIn} />
 
             {/* Search Bar */}
-            <div className="hidden sm:flex flex-1 max-w-xs md:max-w-sm ml-4 mr-auto">
+            <div className="hidden sm:flex max-w-xs md:max-w-sm w-full ml-2">
                 <SearchBar />
             </div>
-
+        </div>
             {/* Desktop Right Actions: Theme Toggle, Cart, AuthActions */}
             <div className="hidden md:flex items-center gap-3 shrink-0">
                 <ThemeToggle />

@@ -13,6 +13,7 @@
     const [searchParams] = useSearchParams();
     const mainRef = useRef<HTMLElement>(null);
     const isCatalog = location.pathname === '/';
+    const isLogin = location.pathname === '/login';
     const category = (searchParams.get('category') || '').toLowerCase();
 
     // Reset scroll to top on route change
@@ -96,7 +97,7 @@
         )}
 
         {/* Header with transparent glass effect over wallpaper */}
-        <Header />
+        {!isLogin && <Header />}
 
         {/* Main body layout container */}
         <div className="flex-1 flex overflow-hidden relative z-10">

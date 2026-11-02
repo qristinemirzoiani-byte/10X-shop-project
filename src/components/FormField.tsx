@@ -33,7 +33,7 @@
             type={isPasswordField && showPassword ? 'text' : type}
             className={`w-full px-4 py-2.5 text-sm rounded-xl border bg-slate-950/60 text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-pink-500/50 transition-all duration-300 ${
                 error
-                ? 'border-rose-500/80 focus:border-rose-500'
+                ? 'border-rose-500/80 focus:border-pink-500'
                 : 'border-slate-800/80 focus:border-pink-500/80'
             } ${isPasswordField ? 'pr-11' : ''} ${className}`}
             {...props} 

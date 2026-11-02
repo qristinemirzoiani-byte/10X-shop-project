@@ -1,5 +1,5 @@
     import { useState, useEffect, useMemo } from 'react';
-    import { useParams, useNavigate, Link } from 'react-router';
+    import { useParams, useNavigate, Link,  useLocation, Navigate, } from 'react-router';
     import {
     ArrowLeft,
     CheckCircle2,
@@ -14,11 +14,14 @@
     import { formatPrice, formatDate, discountedPrice } from '../utils/format';
     import { useCart } from '../contexts/CartContext';
     import { useToast } from '../contexts/ToastContext';
+    import { useAuth } from '../contexts/AuthContext';
     import NotFoundPage from '../pages/NotFoundPage';
 
     export default function OrderDetailsPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
+    const { user } = useAuth();
     const { addItem } = useCart();
     const { showToast } = useToast();
 
@@ -46,6 +49,9 @@
 
     if (!order) {
         return <NotFoundPage />;
+    }
+    if (!user.isLoggedIn) {
+        return <Navigate to="/login" state={{ from: location.pathname }} replace />;
     }
 
     const currentStatus: OrderStatus = OrderModel.getStatus(order, currentTime);

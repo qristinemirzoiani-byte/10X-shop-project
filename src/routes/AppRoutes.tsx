@@ -46,11 +46,7 @@ export function AppRoutes() {
             />
             <Route
                 path="/orders/:id"
-                element={
-                <ProtectedRoute>
-                    <OrderDetailsPage />
-                </ProtectedRoute>
-                }
+                element={<OrderDetailsPage />}
             />
             <Route
                 path="/profile"
