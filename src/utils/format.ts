@@ -3,10 +3,10 @@ export function discountedPrice(price: number, discountPercentage: number): numb
     return price * (1 - discountPercentage / 100);
 }
 
-export function formatPrice(price: number): string {
+export function formatPrice(price: number, currency = 'USD'): string {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: 'USD',
+        currency,
     }).format(price);
 }
 
