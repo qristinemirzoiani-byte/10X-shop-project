@@ -1,6 +1,6 @@
     import { useState } from 'react';
     import { Link, Navigate } from 'react-router';
-    import { CheckCircle2, PackageCheck, ShoppingBag, } from 'lucide-react';
+    import { AlertCircle, CheckCircle2, PackageCheck, ShoppingBag } from 'lucide-react';
     import { useAuth } from '../contexts/AuthContext';
     import { useCart } from '../contexts/CartContext';
     import { OrderModel } from '../models/Order';
@@ -14,6 +14,7 @@
     const { user } = useAuth();
     const { state, cart, clearCart } = useCart();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [orderError, setOrderError] = useState<string | null>(null);
     const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
 
     const initialShipping: ShippingInfo = {
@@ -29,34 +30,36 @@
 
     const handlePlaceOrder = (formData: ShippingInfo) => {
         setIsSubmitting(true);
+        setOrderError(null);
 
         setTimeout(() => {
-        let currentOrderCount = 0;
-        let existingOrders: Order[] = [];
         try {
+            let existingOrders: unknown[] = [];
             const stored = localStorage.getItem(STORAGE_KEYS.orders);
             if (stored) {
-            existingOrders = JSON.parse(stored);
-            if (Array.isArray(existingOrders)) {
-                currentOrderCount = existingOrders.length;
+                const parsed: unknown = JSON.parse(stored);
+                if (!Array.isArray(parsed)) {
+                    throw new Error('Stored order history is invalid');
+                }
+                existingOrders = parsed;
             }
-            }
-        } catch {
-            existingOrders = [];
-        }
 
-        const newOrder = OrderModel.create(cart, formData, currentOrderCount);
+            const newOrder = OrderModel.create(cart, formData, existingOrders.length);
+            localStorage.setItem(
+                STORAGE_KEYS.orders,
+                JSON.stringify([newOrder, ...existingOrders]),
+            );
 
-        try {
-            const updatedOrders = [newOrder, ...existingOrders];
-            localStorage.setItem(STORAGE_KEYS.orders, JSON.stringify(updatedOrders));
+            clearCart();
+            setPlacedOrder(newOrder);
         } catch (err) {
-            console.warn('Failed to save order to localStorage:', err);
+            console.error('Failed to place order:', err);
+            setOrderError(
+                'We could not place your order. Please try again. Your form details and cart have been kept.',
+            );
+        } finally {
+            setIsSubmitting(false);
         }
-
-        clearCart();
-        setPlacedOrder(newOrder);
-        setIsSubmitting(false);
         }, 600);
     };
 
@@ -149,6 +152,16 @@
             Provide your shipping details to complete your order
             </p>
         </div>
+
+        {orderError && (
+            <div
+                role="alert"
+                className="flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
+            >
+                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+                <p>{orderError}</p>
+            </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             {/* Left Column: Modular Shipping Form */}
