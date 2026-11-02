@@ -1,5 +1,5 @@
     // pages/CatalogPage.tsx
-    import { useCallback } from 'react';
+    import { useCallback, useMemo } from 'react';
     import { useSearchParams } from 'react-router';
     import { isSortOption } from '../types/products';
     import type { ProductsResponse, SortOption } from '../types/products';
@@ -13,6 +13,7 @@
     import { CatalogError } from '../product/CatalogError';
     import { useTheme } from '../contexts/ThemeContext';
     import { useCart } from '../contexts/CartContext';
+    import { buildProductsUrl } from '../utils/url';
 
     export default function CatalogPage() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -28,21 +29,19 @@
     const limit = 12;
     const { theme } = useTheme();
     const { addItem } = useCart();
-    const requestKey = `${queryParam}|${categoryParam}|${sortParam}|${pageParam}`;
+    const requestParams = useMemo(() => ({
+        q: queryParam,
+        category: categoryParam,
+        sort: sortParam,
+        page: pageParam,
+        limit,
+    }), [queryParam, categoryParam, sortParam, pageParam, limit]);
+    const requestUrl = buildProductsUrl(requestParams);
     const loadProducts = useCallback(
-        (signal: AbortSignal) => fetchProducts(
-        {
-            q: queryParam,
-            category: categoryParam,
-            sort: sortParam,
-            page: pageParam,
-            limit,
-        },
-        signal
-        ),
-        [queryParam, categoryParam, sortParam, pageParam, limit],
+        (signal: AbortSignal) => fetchProducts(requestParams, signal),
+        [requestParams],
     );
-    const { state: productsState, retry } = useFetch<ProductsResponse>(requestKey, loadProducts);
+    const { state: productsState, retry } = useFetch<ProductsResponse>(requestUrl, loadProducts);
     const loading = productsState.status === 'loading' || productsState.status === 'idle';
     const error = productsState.status === 'error' ? productsState.message : null;
     const products = productsState.status === 'success' ? productsState.data.products : [];

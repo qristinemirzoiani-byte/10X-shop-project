@@ -15,6 +15,28 @@ export interface CartState {
     promoCode: string | null;
 }
 
+export function isCartItem(value: unknown): value is CartItem {
+    if (typeof value !== 'object' || value === null) return false;
+    const item = value as Record<string, unknown>;
+
+    return Number.isInteger(item.productId)
+        && typeof item.title === 'string'
+        && typeof item.price === 'number'
+        && typeof item.discountPercentage === 'number'
+        && typeof item.thumbnail === 'string'
+        && Number.isInteger(item.quantity)
+        && Number.isInteger(item.stock);
+}
+
+export function isCartState(value: unknown): value is CartState {
+    if (typeof value !== 'object' || value === null) return false;
+    const state = value as Record<string, unknown>;
+
+    return Array.isArray(state.items)
+        && state.items.every(isCartItem)
+        && (typeof state.promoCode === 'string' || state.promoCode === null);
+}
+
 export interface ICart {
     subtotal(): number;
     discount(): number;

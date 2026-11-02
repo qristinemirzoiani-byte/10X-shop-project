@@ -8,12 +8,12 @@ interface FetchResult<T> {
 }
 
 export function useFetch<T>(
-    key: string,
+    url: string,
     fetcher: (signal: AbortSignal) => Promise<T>,
 ): { state: AsyncState<T>; retry: () => void } {
     const [attempt, setAttempt] = useState(0);
     const [result, setResult] = useState<FetchResult<T>>({
-        key,
+        key: url,
         attempt,
         state: { status: 'loading' },
     });
@@ -24,21 +24,21 @@ export function useFetch<T>(
         fetcher(controller.signal).then(
             (data) => {
                 if (!controller.signal.aborted) {
-                    setResult({ key, attempt, state: { status: 'success', data } });
+                    setResult({ key: url, attempt, state: { status: 'success', data } });
                 }
             },
             (error: unknown) => {
                 if (controller.signal.aborted) return;
                 const message = error instanceof Error ? error.message : 'Request failed';
-                setResult({ key, attempt, state: { status: 'error', message } });
+                setResult({ key: url, attempt, state: { status: 'error', message } });
             },
         );
 
         return () => controller.abort();
-    }, [attempt, fetcher, key]);
+    }, [attempt, fetcher, url]);
 
     const retry = useCallback(() => setAttempt((current) => current + 1), []);
-    const state = result.key === key && result.attempt === attempt
+    const state = result.key === url && result.attempt === attempt
         ? result.state
         : { status: 'loading' as const };
 

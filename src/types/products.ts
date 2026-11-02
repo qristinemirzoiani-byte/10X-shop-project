@@ -7,6 +7,23 @@
     reviewerName: string;
     }
 
+    export function isReview(value: unknown): value is Review {
+        if (typeof value !== 'object' || value === null) return false;
+        const review = value as Record<string, unknown>;
+
+        return typeof review.rating === 'number'
+            && typeof review.comment === 'string'
+            && typeof review.date === 'string'
+            && typeof review.reviewerName === 'string';
+    }
+
+    export function isReviewsRecord(value: unknown): value is Record<string, Review[]> {
+        if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
+        return Object.values(value).every(
+            (reviews) => Array.isArray(reviews) && reviews.every(isReview),
+        );
+    }
+
     export interface Product {
     id: number;
     title: string;
@@ -77,14 +94,7 @@
         && Array.isArray(product.images)
         && product.images.every((image) => typeof image === 'string')
         && Array.isArray(product.reviews)
-        && product.reviews.every((review) => {
-            if (typeof review !== 'object' || review === null) return false;
-            const candidate = review as Record<string, unknown>;
-            return typeof candidate.rating === 'number'
-                && typeof candidate.comment === 'string'
-                && typeof candidate.date === 'string'
-                && typeof candidate.reviewerName === 'string';
-        });
+        && product.reviews.every(isReview);
 }
 
     export function isProductsResponse(value: unknown): value is ProductsResponse {

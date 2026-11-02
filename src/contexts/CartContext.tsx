@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect, useMemo } from 'react';
 import { cartReducer } from './cart.reducer';
-import type { CartItem, CartState } from '../types/cart';
+import type { CartState } from '../types/cart';
 import type { Product } from '../types/products';
 import { Cart } from '../types/cart';
 import { cartStorage } from '../models/StorageService';
@@ -27,7 +27,7 @@ const initialCartState: CartState = {
 function initCartState(): CartState {
     const stored = cartStorage.get();
     if (stored && Array.isArray(stored.items)) {
-        const items = (stored.items as CartItem[])
+        const items = stored.items
             .filter((item) => Number.isInteger(item.stock) && item.stock > 0)
             .map((item) => ({
                 ...item,
