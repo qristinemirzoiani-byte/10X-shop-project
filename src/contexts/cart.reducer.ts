@@ -96,7 +96,8 @@ import type { Product } from '../types/products';
         }
 
         default: {
-        return state;
+        const exhaustiveAction: never = action;
+        return exhaustiveAction;
         }
     }
 }

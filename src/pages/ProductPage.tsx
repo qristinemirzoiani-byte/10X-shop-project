@@ -6,7 +6,7 @@ import { fetchProductById, fetchRelatedProducts } from '../api/products.api';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 import { useToast } from '../contexts/ToastContext';
-import { STORAGE_KEYS, StorageService } from '../models/StorageService';
+import { reviewsStorage } from '../models/StorageService';
 import { ProductGallery } from '../product/ProductGallery';
 import { ProductGrid } from '../product/ProductGrid';
 import { ReviewForm } from '../product/ReviewForm';
@@ -14,8 +14,6 @@ import { ReviewsList } from '../product/ReviewsList';
 import type { Product, Review } from '../types/products';
 import { discountedPrice, formatPrice } from '../utils/format';
 import NotFoundPage from './NotFoundPage';
-
-const reviewStorage = new StorageService<Record<string, Review[]>>(STORAGE_KEYS.reviews);
 
 function ProductSkeleton() {
     return (
@@ -98,7 +96,7 @@ export default function ProductPage() {
                 setQuantity(1);
 
                 // ლოკალური review-ები API review-ების წინ დგას
-                const localReviews = reviewStorage.get()?.[String(productId)] ?? [];
+                const localReviews = reviewsStorage.get()?.[String(productId)] ?? [];
                 setReviews([...localReviews, ...(result.reviews ?? [])]);
 
                 const recommendations = await fetchRelatedProducts(result.category, result.id, controller.signal);
@@ -141,11 +139,11 @@ export default function ProductPage() {
             : 'Guest';
 
         const review: Review = { rating, comment: text, date: new Date().toISOString(), reviewerName };
-        const stored = reviewStorage.get() ?? {};
+        const stored = reviewsStorage.get() ?? {};
         const key = String(product.id);
 
         // new reviews are added to the beginning of the list, so they appear first
-        reviewStorage.set({ ...stored, [key]: [review, ...(stored[key] ?? [])] });
+        reviewsStorage.set({ ...stored, [key]: [review, ...(stored[key] ?? [])] });
         setReviews((current) => [review, ...current]);
         setComment('');
         setRating(5);

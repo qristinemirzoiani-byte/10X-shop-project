@@ -4,7 +4,7 @@
     import { useAuth } from '../contexts/AuthContext';
     import { useCart } from '../contexts/CartContext';
     import { OrderModel } from '../models/Order';
-    import { STORAGE_KEYS } from '../models/StorageService';
+    import { ordersStorage } from '../models/StorageService';
     import { formatPrice } from '../utils/format';
     import type { ShippingInfo, Order } from '../types/order';
     import { CheckoutForm } from '../checkout/CheckoutForm';
@@ -34,21 +34,12 @@
 
         setTimeout(() => {
         try {
-            let existingOrders: unknown[] = [];
-            const stored = localStorage.getItem(STORAGE_KEYS.orders);
-            if (stored) {
-                const parsed: unknown = JSON.parse(stored);
-                if (!Array.isArray(parsed)) {
-                    throw new Error('Stored order history is invalid');
-                }
-                existingOrders = parsed;
-            }
+            const existingOrders = ordersStorage.get() ?? [];
 
             const newOrder = OrderModel.create(cart, formData, existingOrders.length);
-            localStorage.setItem(
-                STORAGE_KEYS.orders,
-                JSON.stringify([newOrder, ...existingOrders]),
-            );
+            if (!ordersStorage.set([newOrder, ...existingOrders])) {
+                throw new Error('Failed to save order history');
+            }
 
             clearCart();
             setPlacedOrder(newOrder);

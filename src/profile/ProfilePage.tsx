@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
 import { useCart } from '../contexts/CartContext';
-import { STORAGE_KEYS } from '../models/StorageService';
+import { ordersStorage, reviewsStorage } from '../models/StorageService';
 import { ProfileOverview } from '../profile/ProfileOverview';
 import { ProfileForm } from '../profile/ProfileForm';
 
@@ -18,11 +18,7 @@ export default function ProfilePage() {
 
   const [orderCount, setOrderCount] = useState<number>(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.orders);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) return parsed.length;
-      }
+      return ordersStorage.get()?.length ?? 0;
     } catch {
       // ignore
     }
@@ -37,8 +33,8 @@ export default function ProfilePage() {
     ) {
       try {
         clearCart();
-        localStorage.removeItem(STORAGE_KEYS.orders);
-        localStorage.removeItem(STORAGE_KEYS.reviews);
+        ordersStorage.remove();
+        reviewsStorage.remove();
         setOrderCount(0);
         showToast('Local cart, orders, and reviews cleared', 'info');
       } catch (e) {

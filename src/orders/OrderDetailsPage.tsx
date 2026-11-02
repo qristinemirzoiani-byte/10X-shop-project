@@ -10,7 +10,7 @@
     } from 'lucide-react';
     import type { Order, OrderStatus } from '../types/order';
     import { OrderModel } from '../models/Order';
-    import { STORAGE_KEYS } from '../models/StorageService';
+    import { ordersStorage } from '../models/StorageService';
     import { formatPrice, formatDate, discountedPrice } from '../utils/format';
     import { useCart } from '../contexts/CartContext';
     import { useAuth } from '../contexts/AuthContext';
@@ -27,16 +27,8 @@
     )?.justPlaced === true;
 
     const order = useMemo<Order | null>(() => {
-        try {
-        const stored = localStorage.getItem(STORAGE_KEYS.orders);
-        if (stored) {
-            const parsed: Order[] = JSON.parse(stored);
-            return parsed.find((o) => String(o.id) === id) ?? null;
-        }
-        } catch (err) {
-        console.warn('Failed to parse order details:', err);
-        }
-        return null;
+        const stored = ordersStorage.get();
+        return stored?.find((savedOrder) => String(savedOrder.id) === id) ?? null;
     }, [id]);
 
     const [currentTime, setCurrentTime] = useState<Date>(new Date());

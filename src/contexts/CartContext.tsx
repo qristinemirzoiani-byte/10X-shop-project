@@ -4,7 +4,7 @@ import { cartReducer } from './cart.reducer';
 import type { CartItem, CartState } from '../types/cart';
 import type { Product } from '../types/products';
 import { Cart } from '../types/cart';
-import { STORAGE_KEYS } from '../models/StorageService';
+import { cartStorage } from '../models/StorageService';
 import { useToast } from './ToastContext';
 
 interface CartContextType {
@@ -25,12 +25,9 @@ const initialCartState: CartState = {
 };
 
 function initCartState(): CartState {
-    try {
-    const raw = localStorage.getItem(STORAGE_KEYS.cart);
-    if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed?.items)) {
-        const items = (parsed.items as CartItem[])
+    const stored = cartStorage.get();
+    if (stored && Array.isArray(stored.items)) {
+        const items = (stored.items as CartItem[])
             .filter((item) => Number.isInteger(item.stock) && item.stock > 0)
             .map((item) => ({
                 ...item,
@@ -38,12 +35,8 @@ function initCartState(): CartState {
             }));
         return {
             items,
-            promoCode: typeof parsed.promoCode === 'string' ? parsed.promoCode : null,
+            promoCode: typeof stored.promoCode === 'string' ? stored.promoCode : null,
         };
-    }
-    }
-} catch (err) {
-    console.warn('Failed to parse cart from localStorage:', err);
     }
     return initialCartState;
 }
@@ -55,11 +48,7 @@ const [state, dispatch] = useReducer(cartReducer, initialCartState, initCartStat
 const { showToast } = useToast();
 
 useEffect(() => {
-    try {
-            localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(state));
-        } catch (err) {
-            console.warn('Failed to save cart to localStorage:', err);
-    }
+    cartStorage.set(state);
 }, [state]);
 
 const cart = useMemo(() => new Cart(state.items, state.promoCode), [state.items, state.promoCode]);

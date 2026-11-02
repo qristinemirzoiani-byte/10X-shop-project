@@ -5,14 +5,14 @@ import { useAuth } from '../contexts/AuthContext';
 import { OrderCard } from '../orders/OrderCard';
 import type { Order } from '../types/order';
 import { OrderModel } from '../models/Order';
-import { STORAGE_KEYS } from '../models/StorageService';
+import { ordersStorage } from '../models/StorageService';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 export default function OrdersPage() {
     const { user } = useAuth();
     const isAuthenticated = user.isLoggedIn;
 
-    const [orders, setOrders] = useLocalStorage<Order[]>(STORAGE_KEYS.orders, []);
+    const [orders, setOrders] = useLocalStorage<Order[]>(ordersStorage, []);
 
     const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
