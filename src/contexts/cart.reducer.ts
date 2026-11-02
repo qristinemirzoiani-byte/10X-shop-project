@@ -13,13 +13,14 @@ import type { Product } from '../types/products';
     switch (action.type) {
         case 'ADD_ITEM': {
         const { product, qty } = action;
-        if (qty <= 0) return state;
+        const normalizedQty = Math.floor(qty);
+        if (!Number.isFinite(qty) || normalizedQty < 1 || product.stock <= 0) return state;
 
         const existingIndex = state.items.findIndex((item) => item.productId === product.id);
 
         if (existingIndex > -1) {
             const existing = state.items[existingIndex];
-            const newQty = existing.quantity + qty;
+            const newQty = existing.quantity + normalizedQty;
             // Don't exceed stock limit if stock is known
             const finalQty = Math.min(newQty, product.stock);
 
@@ -31,7 +32,7 @@ import type { Product } from '../types/products';
 
             return { ...state, items: updatedItems };
         } else {
-            const finalQty = Math.min(qty, product.stock);
+            const finalQty = Math.min(normalizedQty, product.stock);
             const newItem = {
             productId: product.id,
             title: product.title,
@@ -51,10 +52,12 @@ import type { Product } from '../types/products';
 
         case 'SET_QTY': {
         const { productId, qty } = action;
-        const sanitizedQty = Math.max(1, qty);
+        if (!Number.isFinite(qty)) return state;
 
         const updated = state.items.map((item) => {
             if (item.productId === productId) {
+            if (item.stock <= 0) return item;
+            const sanitizedQty = Math.max(1, Math.floor(qty));
             const clamped = Math.min(sanitizedQty, item.stock);
             return { ...item, quantity: clamped };
             }

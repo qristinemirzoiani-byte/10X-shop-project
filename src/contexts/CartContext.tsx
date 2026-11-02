@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect, useMemo } from 'react';
 import { cartReducer } from './cart.reducer';
-import type { CartState } from '../types/cart';
+import type { CartItem, CartState } from '../types/cart';
 import type { Product } from '../types/products';
 import { Cart } from '../types/cart';
 import { STORAGE_KEYS } from '../models/StorageService';
@@ -29,7 +29,16 @@ function initCartState(): CartState {
     if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed?.items)) {
-        return parsed as CartState;
+        const items = (parsed.items as CartItem[])
+            .filter((item) => Number.isInteger(item.stock) && item.stock > 0)
+            .map((item) => ({
+                ...item,
+                quantity: Math.min(item.stock, Math.max(1, Math.floor(item.quantity))),
+            }));
+        return {
+            items,
+            promoCode: typeof parsed.promoCode === 'string' ? parsed.promoCode : null,
+        };
     }
     }
 } catch (err) {
@@ -75,6 +84,12 @@ const addItem = (product: Product, qty: number = 1): boolean => {
 
 const setQuantity = (productId: number, qty: number) => {
     const currentItem = state.items.find((i) => i.productId === productId);
+    if (currentItem && currentItem.stock <= 0) {
+        dispatch({ type: 'REMOVE_ITEM', productId });
+        showToast('Out-of-stock item removed from cart', 'info');
+        return;
+    }
+
     if (currentItem && qty > currentItem.stock) {
         showToast(`Cannot exceed available stock (${currentItem.stock})`, 'error');
         dispatch({ type: 'SET_QTY', productId, qty: currentItem.stock });
