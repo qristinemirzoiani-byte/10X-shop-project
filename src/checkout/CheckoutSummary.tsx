@@ -24,6 +24,9 @@
                     <img
                     src={item.thumbnail}
                     alt={item.title}
+                    loading="lazy"
+                    width={48}
+                    height={48}
                     className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-800 object-contain p-1 shrink-0"
                     />
                     <div className="flex-1 min-w-0">

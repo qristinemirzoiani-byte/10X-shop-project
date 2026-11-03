@@ -32,6 +32,9 @@ return (
             <img
             src={item.thumbnail}
             alt={item.title}
+            loading="lazy"
+            width={80}
+            height={80}
             className="w-full h-full object-contain"
             />
         </Link>

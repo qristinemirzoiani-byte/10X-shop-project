@@ -32,7 +32,14 @@ export function ProductGallery({ images, selectedImage, onSelectImage, title }: 
                     : 'border-slate-200 dark:border-slate-800 opacity-70 hover:opacity-100'
                 }`}
                 >
-                <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-contain" />
+                <img
+                    src={img}
+                    alt={`Thumbnail ${idx + 1}`}
+                    loading="lazy"
+                    width={64}
+                    height={64}
+                    className="w-full h-full object-contain"
+                />
                 </button>
             ))}
             </div>

@@ -186,6 +186,9 @@
                         <img
                         src={item.thumbnail}
                         alt={item.title}
+                        loading="lazy"
+                        width={64}
+                        height={64}
                         className="w-16 h-16 rounded-xl bg-slate-100 dark:bg-slate-800 object-contain p-1.5 shrink-0"
                         />
                         <div className="flex-1 min-w-0">
