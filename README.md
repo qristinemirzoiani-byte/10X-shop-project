@@ -5,7 +5,7 @@ A modern, responsive e-commerce web application built with **React 19**, **TypeS
 ---
 
 ## 🚀 Live Demo & Status
-- **Current Milestone**: Phase 1 — Authentication, State Management & Design System.
+- **Current Milestone**: CORE feature set implemented; FULL release verification in progress (Firefox/WebKit and deployed Lighthouse checks remain).
 - **Node Environment**: Node.js 20+ / Vite.
 
 ---
@@ -66,9 +66,9 @@ Build for production:
 npm run build
 
 📚 Project Documentation
-PLAN.md: 28-step roadmap and milestone tracking.
+PLAN.md: Estimated work breakdown, module scope, risks, and completion criteria.
 REPORT.md: Architectural decisions and technical trade-offs.
-DEBUG-LOG.md: Issue tracking, bug fixes, and React 19 type migrations.
+DEBUG-LOG.md: Reproduction procedures, Git evidence, fixes, and lessons learned.
 COMPATIBILITY.md: Browser and device compatibility audit.
 
 ## 📌 Progress Update (Sprint 1 - Layout & Core Architecture)
