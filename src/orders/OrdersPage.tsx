@@ -3,8 +3,8 @@ import { Link, Navigate } from 'react-router';
 import { Package, Clock, Truck, CheckCircle2, ShoppingBag, PlusCircle, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { OrderCard } from '../orders/OrderCard';
-import type { Order } from '../types/order';
-import { OrderModel } from '../models/Order';
+import type { Order as OrderData } from '../types/order';
+import { Order } from '../models/Order';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { isOrderArray } from '../types/order';
 import { STORAGE_KEYS } from '../models/StorageService';
@@ -13,7 +13,7 @@ export default function OrdersPage() {
     const { user } = useAuth();
     const isAuthenticated = user.isLoggedIn;
 
-    const [orders, setOrders] = useLocalStorage<Order[]>(
+    const [orders, setOrders] = useLocalStorage<OrderData[]>(
         STORAGE_KEYS.orders,
         [],
         isOrderArray,
@@ -33,8 +33,8 @@ export default function OrdersPage() {
         return <Navigate to="/login" state={{ from: '/orders' }} replace />;
     }
 
-    const getOrderStatus = (order: Order) => {
-        const label = OrderModel.getStatus(order, currentTime);
+    const getOrderStatus = (order: OrderData) => {
+        const label = new Order(order).getStatus(currentTime);
 
         switch (label) {
             case 'Processing':
@@ -59,7 +59,7 @@ export default function OrdersPage() {
     };
 
     const handleCreateMockOrder = () => {
-        const mockOrder: Order = {
+        const mockOrder: OrderData = {
             id: Date.now(),
             number: `10X-${String(orders.length + 1).padStart(5, '0')}`,
             placedAt: new Date().toISOString(),

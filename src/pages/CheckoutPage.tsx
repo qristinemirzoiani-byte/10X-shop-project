@@ -3,10 +3,10 @@
     import { AlertCircle, CheckCircle2, PackageCheck, ShoppingBag } from 'lucide-react';
     import { useAuth } from '../contexts/AuthContext';
     import { useCart } from '../contexts/CartContext';
-    import { OrderModel } from '../models/Order';
+    import { Order } from '../models/Order';
     import { ordersStorage } from '../models/StorageService';
     import { formatPrice } from '../utils/format';
-    import type { ShippingInfo, Order } from '../types/order';
+    import type { ShippingInfo, Order as OrderData } from '../types/order';
     import { CheckoutForm } from '../checkout/CheckoutForm';
     import { CheckoutSummary } from '../checkout/CheckoutSummary';
 
@@ -15,7 +15,7 @@
     const { state, cart, clearCart } = useCart();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [orderError, setOrderError] = useState<string | null>(null);
-    const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
+    const [placedOrder, setPlacedOrder] = useState<OrderData | null>(null);
 
     const initialShipping: ShippingInfo = {
         fullName: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username || '',
@@ -36,7 +36,7 @@
         try {
             const existingOrders = ordersStorage.get() ?? [];
 
-            const newOrder = OrderModel.create(cart, formData, existingOrders.length);
+            const newOrder = Order.create(cart, formData, existingOrders.length);
             if (!ordersStorage.set([newOrder, ...existingOrders])) {
                 throw new Error('Failed to save order history');
             }

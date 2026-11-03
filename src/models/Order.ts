@@ -1,10 +1,10 @@
 import { Cart } from '../types/cart';
-import type { Order, OrderStatus, ShippingInfo } from '../types/order';
+import type { Order as OrderData, OrderStatus, ShippingInfo } from '../types/order';
 
-export class OrderModel implements Order {
+export class Order implements OrderData {
     id: number;
     number: string;
-    items: Order['items'];
+    items: OrderData['items'];
     shipping: ShippingInfo;
     subtotal: number;
     discount: number;
@@ -12,7 +12,7 @@ export class OrderModel implements Order {
     total: number;
     placedAt: string;
 
-    constructor(order: Order) {
+    constructor(order: OrderData) {
         this.id = order.id;
         this.number = order.number;
         this.items = order.items;
@@ -24,7 +24,7 @@ export class OrderModel implements Order {
         this.placedAt = order.placedAt;
     }
 
-    toJSON(): Order {
+    toJSON(): OrderData {
         return {
             id: this.id,
             number: this.number,
@@ -38,8 +38,8 @@ export class OrderModel implements Order {
         };
     }
 
-    static create(cart: Cart, shipping: ShippingInfo, orderCount = 0): OrderModel {
-        return new OrderModel({
+    static create(cart: Cart, shipping: ShippingInfo, orderCount = 0): Order {
+        return new Order({
             id: Date.now(),
             number: `10X-${String(orderCount + 1).padStart(5, '0')}`,
             items: cart.getItems(),
@@ -52,8 +52,8 @@ export class OrderModel implements Order {
         });
     }
 
-    static getStatus(order: Order, now: Date = new Date()): OrderStatus {
-        const elapsedMs = now.getTime() - new Date(order.placedAt).getTime();
+    getStatus(now: Date = new Date()): OrderStatus {
+        const elapsedMs = now.getTime() - new Date(this.placedAt).getTime();
 
         if (elapsedMs < 60 * 1000) return 'Processing';
         if (elapsedMs < 3 * 60 * 1000) return 'Shipped';

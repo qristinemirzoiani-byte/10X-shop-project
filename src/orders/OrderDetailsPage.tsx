@@ -8,8 +8,8 @@
     RotateCcw,
     MapPin,
     } from 'lucide-react';
-    import type { Order, OrderStatus } from '../types/order';
-    import { OrderModel } from '../models/Order';
+    import type { Order as OrderData, OrderStatus } from '../types/order';
+    import { Order } from '../models/Order';
     import { ordersStorage } from '../models/StorageService';
     import { formatPrice, formatDate, discountedPrice } from '../utils/format';
     import { useCart } from '../contexts/CartContext';
@@ -26,7 +26,7 @@
         location.state as { justPlaced?: boolean } | null
     )?.justPlaced === true;
 
-    const order = useMemo<Order | null>(() => {
+    const order = useMemo<OrderData | null>(() => {
         const stored = ordersStorage.get();
         return stored?.find((savedOrder) => String(savedOrder.id) === id) ?? null;
     }, [id]);
@@ -47,7 +47,7 @@
         return <Navigate to="/login" state={{ from: location.pathname }} replace />;
     }
 
-    const currentStatus: OrderStatus = OrderModel.getStatus(order, currentTime);
+    const currentStatus: OrderStatus = new Order(order).getStatus(currentTime);
 
     const handleReorder = () => {
         const added = addItems(order.items.map((item) => ({
