@@ -17,7 +17,7 @@ export class ApiClient {
         try {
             res = await fetch(this.baseUrl + path, { ...init, headers });
         } catch (err: unknown) {
-            if ((err as Error)?.name === 'AbortError') {
+            if (err instanceof Error && err.name === 'AbortError') {
                 throw err;
             }
             const msg = err instanceof Error ? err.message : 'Network connection failed';
