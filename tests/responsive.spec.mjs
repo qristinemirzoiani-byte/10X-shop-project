@@ -179,3 +179,43 @@ test('catalog grid matches documented CSS breakpoint thresholds', async ({ page 
     expect(actualColumns, `${width}px grid columns`).toBe(columns);
   }
 });
+
+test('catalog categories use an accessible dropdown on mobile and tablet', async ({ page }) => {
+  test.setTimeout(120_000);
+  await installApiFixtures(page);
+
+  for (const width of [375, 768]) {
+    await page.setViewportSize({ width, height: 812 });
+    await page.goto('/?page=1');
+
+    const menuButton = page.getByRole('button', { name: 'Browse categories. Current category: All Products' });
+    const categoryNavigation = page.getByRole('navigation', { name: 'Sidebar categories' });
+
+    await expect(menuButton).toBeVisible();
+    await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(categoryNavigation).toBeHidden();
+
+    await menuButton.click();
+    await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
+    await expect(categoryNavigation).toBeVisible();
+    await expect(categoryNavigation.getByRole('button', { name: 'Beauty', exact: true })).toBeVisible();
+
+    const menuWidth = await categoryNavigation.evaluate((element) => element.scrollWidth);
+    const menuClientWidth = await categoryNavigation.evaluate((element) => element.clientWidth);
+    expect(menuWidth, `category menu overflows horizontally at ${width}px`).toBeLessThanOrEqual(menuClientWidth);
+
+    await categoryNavigation.getByRole('button', { name: 'Beauty', exact: true }).click();
+    await expect(page).toHaveURL(/category=beauty/);
+    await expect(categoryNavigation).toBeHidden();
+  }
+});
+
+test('catalog keeps its category list visible on desktop', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 812 });
+  await installApiFixtures(page);
+  await page.goto('/');
+
+  await expect(page.getByRole('button', { name: /Browse categories/ })).toBeHidden();
+  await expect(page.getByRole('navigation', { name: 'Sidebar categories' })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Sidebar categories' }).getByRole('button', { name: 'Beauty', exact: true })).toBeVisible();
+});

@@ -6,6 +6,7 @@ A modern, responsive e-commerce web application built with **React 19**, **TypeS
 
 ## 🚀 Live Demo & Status
 - **Current Milestone**: CORE feature set implemented; FULL release verification in progress (Firefox/WebKit and deployed Lighthouse checks remain).
+- **Live Demo**: No public application URL has been provided yet. The [Vercel project dashboard](https://10-x-shop-project-7u3arqb6i-qristi.vercel.app) is a management link, not a public demo.
 - **Node Environment**: Node.js 20+ / Vite.
 
 ---
@@ -70,6 +71,7 @@ PLAN.md: Estimated work breakdown, module scope, risks, and completion criteria.
 REPORT.md: Architectural decisions and technical trade-offs.
 DEBUG-LOG.md: Reproduction procedures, Git evidence, fixes, and lessons learned.
 COMPATIBILITY.md: Browser and device compatibility audit.
+Progress notes: [Week 1](./docs/progress/week-1.md), [Week 2](./docs/progress/week-2.md), and [Week 3](./docs/progress/week-3.md).
 
 ## 📌 Progress Update (Sprint 1 - Layout & Core Architecture)
 - **Theme Management**: Implemented `ThemeContext` with dark/light mode toggling, HTML class sync, and localStorage persistence.

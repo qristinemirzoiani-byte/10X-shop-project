@@ -3,7 +3,7 @@
 ## Test setup
 
 - Playwright ran in Google Chrome 156.0.8078.76 and Microsoft Edge 156.0.4314.58 on Windows. Product API responses are replaced with local fixtures so route checks do not depend on network availability.
-- The linked `edge-*.png` files are the existing screenshot set; they were not recaptured during this rerun.
+- The linked `edge-*.png` files are the existing screenshot set; they were not recaptured during this rerun. They predate the mobile/tablet category dropdown and still show the previous horizontal category strip.
 - Mobile viewport: 375 × 812 CSS pixels.
 - Responsive grid checks: 375, 480, 481, 767, 768, 1024, 1025, and 1280 pixels.
 - Protected routes were opened with demo user, cart, and order data in local storage.
@@ -22,7 +22,7 @@
 | Profile | `/profile` | Pass | Pass | Pass | Pass | Pass | Pass | [Profile](./docs/compat/edge-mobile-profile.png) |
 | Login | `/login` | Pass | Pass | Pass | Pass | Pass | Pass | [Login](./docs/compat/edge-mobile-login.png) |
 
-The automated checks verified page content and `document.documentElement.scrollWidth` at all listed sizes. At 375px, visible buttons and form controls, including the catalog pagination buttons, were at least 44 × 44px, and no unintended horizontal overflow was found. The catalog category bar is horizontally scrollable by design. The existing mobile navigation drawer capture is [here](./docs/compat/edge-mobile-drawer.png).
+The automated checks verified page content and `document.documentElement.scrollWidth` at all listed sizes. At 375px, visible buttons and form controls, including the catalog pagination buttons, were at least 44 × 44px, and no unintended horizontal overflow was found. The category list is now a click-to-open vertical dropdown below 1024px; on larger screens it remains a vertical sidebar. The existing mobile navigation drawer capture is [here](./docs/compat/edge-mobile-drawer.png).
 
 Screenshots in the table are available for the 375px mobile viewport only.
 
@@ -41,7 +41,7 @@ The catalog grid check uses 12 local fixture products and a 194-product total so
 | 1025px | 4 | Pass | Pass |
 | 1280px | 4 | Pass | Pass |
 
-The catalog loading skeleton uses the same breakpoints as the loaded product grid. Below 1024px, categories are displayed in a horizontal strip; at 1024px and wider, the sidebar returns to the left of the content.
+The catalog loading skeleton uses the same breakpoints as the loaded product grid. Below 1024px, categories are available from the collapsible dropdown; at 1024px and wider, the category list is shown as a vertical sidebar.
 
 The repository does not contain a separate acceptance specification for the grid breakpoints. This matrix verifies the current CSS thresholds (481px, 768px, and 1025px); it should not be treated as evidence that these are the required product breakpoints.
 
