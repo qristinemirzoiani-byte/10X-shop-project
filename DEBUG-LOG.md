@@ -1,84 +1,65 @@
-# 10X Shop — Debugging & Engineering Log
+# 10X Shop — Debugging Log
 
-### Issue #001: Deprecated `React.FormEvent` Type in React 19
-- **Date**: October 21, 2026
-- **Symptom**: VS Code displayed a strikethrough (deprecated warning) on `React.FormEvent` in the `handleSubmit` event signature.
-- **Root Cause**: React 19 typings updated HTML form event signatures to prefer native `SubmitEvent` or explicit generic binding (`React.FormEvent<HTMLFormElement>`).
-- **Resolution**: Updated the event parameter typing to `SubmitEvent` (or `React.FormEvent<HTMLFormElement>`), eliminating the warning and ensuring future-proof compliance.
+The cases below are real fixes from the Git history. Each linked commit shows the code before and after the fix. The reproduction steps are regression checks for the reported behavior; no pre-fix screenshots or browser traces were retained.
 
----
+## Issue 1 — Checkout opened with an empty cart
 
-### Issue #002: Form State Duplication & Maintenance Overhead
-- **Date**: October 21, 2026
-- **Symptom**: Modifying input styling required editing three separate JSX blocks with identical Tailwind classes.
-- **Root Cause**: Tight coupling of form layout and input presentation within a single monolithic page.
-- **Resolution**: Created `src/components/FormField.tsx`. Prop-driven API allows passing `label`, `value`, `placeholder`, and `error`, centralizing input styles in one file.
+- **Symptom**: Opening checkout without cart items left the user on a checkout screen that could not produce an order.
+- **Reproduction / regression check**:
+  1. Clear the cart.
+  2. Open `/checkout` directly.
+  3. Confirm the app redirects to `/cart` and explains that products must be added first.
+- **Tool and result**: Inspected the route behavior in the before/after Git diff (`git show 76c11fc`). Before the fix, checkout rendered its own empty-cart message; the fix redirects to `/cart` and passes a helpful message in router state.
+- **Root cause**: Checkout handled the empty state separately instead of sending the user to the page where they can manage the cart.
+- **Fix**: [Commit 76c11fc](https://github.com/qristinemirzoiani-byte/10X-shop-project/commit/76c11fc) — redirect empty checkout to the cart page.
+- **What I learned**: Guard invalid page state at the route/page boundary and guide the user to the next useful action.
 
----
+## Issue 2 — Order-save failure could look like a successful checkout
 
-### Issue #003: Auth State Missing Context Boundary
-- **Date**: October 21, 2026
-- **Symptom**: `useAuth must be used within an AuthProvider` runtime error safeguard.
-- **Root Cause**: `LoginPage` consumed `useAuth()` without being enclosed by `<AuthProvider>` in the component tree.
-- **Resolution**: Wrapped the root view inside `<AuthProvider>` in `src/App.tsx`.
+- **Symptom**: If saving an order to browser storage failed, the user could still see a success state and lose the cart contents.
+- **Reproduction / regression check**:
+  1. Add an item to the cart and open checkout.
+  2. In DevTools, make `localStorage.setItem` throw for the order-storage key.
+  3. Submit the checkout form.
+  4. Confirm an error is shown and the cart is not cleared.
+- **Tool and result**: Inspected the before/after Git diff (`git show 50c7e16`). Before the fix, storage failure was only logged and execution continued to clear the cart and show confirmation. The fix catches the failure, displays an alert, and only clears the cart after a successful save.
+- **Root cause**: Persistence errors were swallowed, and the success path was not conditional on storage succeeding.
+- **Fix**: [Commit 50c7e16](https://github.com/qristinemirzoiani-byte/10X-shop-project/commit/50c7e16) — report order-placement failures.
+- **What I learned**: Treat persistence as part of the checkout transaction; do not show success or discard user data after a failed save.
 
-## 📅 Progress Report — Session Highlights
+## Issue 3 — Persisted cart data could contain unavailable or invalid quantities
 
-### 1. Features & Components Implemented
-- **Orders History (`/orders`)**:
-  - Implemented dynamic order history screen restricted to authenticated users.
-  - Added deterministic real-time delivery status timeline based on elapsed time:
-    - `0–1 min`: Processing (animated clock)
-    - `1–3 min`: Shipped (transit truck badge)
-    - `3+ min`: Delivered (success checkmark badge)
-  - Extracted modular `OrderCard.tsx` component following Single Responsibility principle.
-  - Implemented persistent mock order creation stored in `localStorage`.
+- **Symptom**: Cart contents restored from older localStorage data could include products with no available stock or quantities outside the available range.
+- **Reproduction / regression check**:
+  1. In DevTools → Application → Local Storage, edit the saved cart so an item has `stock: 0`, or a quantity greater than its stock.
+  2. Reload the app and open the cart.
+  3. Confirm unavailable items are discarded and remaining quantities are bounded by stock.
+- **Tool and result**: Inspected the before/after Git diff (`git show 27111a3`). Before the fix, stored cart items were accepted with only an array check. The fix filters unavailable items and clamps restored quantities.
+- **Root cause**: Data read from localStorage was trusted without normalizing it against current stock constraints.
+- **Fix**: [Commit 27111a3](https://github.com/qristinemirzoiani-byte/10X-shop-project/commit/27111a3) — handle out-of-stock cart items safely.
+- **What I learned**: Browser storage can be stale or edited; validate and normalize persisted state before using it.
 
-- **Global Header Search (`SearchBar.tsx`)**:
-  - Built standalone `SearchBar` component embedded within the persistent header.
-  - Implemented 400ms debounce navigation that routes external queries directly to catalog (`/?q=...`).
+## Issue 4 — Reordering could add only part of an old order
 
-- **Products API Layer (`src/api/products.api.ts`)**:
-  - Structured standard `fetchProducts` service connected to DummyJSON API.
-  - Implemented pagination math (`skip = (page - 1) * limit`), parameterized search (`?q=`), category filtering (`/category/:slug`), and server sorting with client fallback.
-  - Integrated `AbortSignal` support for race-condition prevention.
+- **Symptom**: If an order had multiple products and one was unavailable, earlier products could already have been added to the cart before the reorder failed.
+- **Reproduction / regression check**:
+  1. Open an order containing at least two products.
+  2. Make one product unavailable or set its requested quantity above current stock.
+  3. Choose **Reorder Items**.
+  4. Confirm the operation reports failure and adds none of the order's products.
+- **Tool and result**: Inspected the before/after Git diff and parent version (`git show eb82ae7`). The previous code called `addItem` once per product; the fix validates all requested additions and available stock before dispatching any cart updates.
+- **Root cause**: Reorder was implemented as independent item additions, so a later failure could leave earlier updates applied.
+- **Fix**: [Commit eb82ae7](https://github.com/qristinemirzoiani-byte/10X-shop-project/commit/eb82ae7) — make reorder atomic.
+- **What I learned**: Validate a multi-item operation completely before applying any state changes.
 
----
+## Issue 5 — Clearing profile data left the cart visible in the current session
 
-### 2. Bugs Identified & Resolved
-1. **Controlled Input Freezing in Formik**:
-   - *Cause*: `FormField.tsx` omitted the `name` attribute and HTML rest props, preventing Formik's `handleChange` from identifying target inputs.
-   - *Resolution*: Extended `React.InputHTMLAttributes<HTMLInputElement>` and passed `{...props}` to the `<input>` element.
-
-2. **Auth Property Mismatch (`isAuthenticated` vs `isLoggedIn`)**:
-   - *Cause*: `OrdersPage` attempted to destructure non-existent `isAuthenticated` from `AuthContextType`.
-   - *Resolution*: Updated to retrieve `user.isLoggedIn` directly from `useAuth()`.
-
-3. **Browser Native Password Reveal Duplication**:
-   - *Cause*: Windows/Chromium default password reveal button conflicted with custom toggle eye icon.
-   - *Resolution*: Added CSS pseudo-element rule `input::-ms-reveal { display: none; }
-   
-   `.
-
-   ---
-
-### Case 5: Client-Side Sorting Fallback Compromise on Paginated Results (API Limitation / Architecture Trade-Off)
-- **Symptom**: Upstream DummyJSON API does not reliably support server-side multi-parameter combinations (e.g. `/products/search?q=...` or specific `/products/category/...` combined with `sortBy` and `order`). In some environments or query combinations, the upstream API ignores `sortBy`/`order` parameters and returns items in default insertion order.
-- **Reproduction**:
-  1. Trigger search query with sort option: `/products/search?q=phone&sortBy=price&order=asc`.
-  2. Inspect API response; observe items are not ordered strictly by price.
-- **Tool**: Network inspector / REST API contract verification with DummyJSON.
-- **Root Cause & Limitation**: The third-party DummyJSON API documentation notes that `sortBy` and `order` query params are only guaranteed on the primary `/products` endpoint. Combined endpoints (`/products/search` or older mock handlers) do not perform full-database server-side ordering.
-- **Architectural Compromise / Fallback**:
-  In `products.api.ts`, a client-side sort fallback was implemented:
-  ```typescript
-  if (params.sort && response.products) {
-    const sorted = [...response.products];
-    if (params.sort === 'price-asc') sorted.sort((a, b) => a.price - b.price);
-    else if (params.sort === 'price-desc') sorted.sort((a, b) => b.price - a.price);
-    else if (params.sort === 'rating-desc') sorted.sort((a, b) => b.rating - a.rating);
-    else if (params.sort === 'title-asc') sorted.sort((a, b) => a.title.localeCompare(b.title));
-    return { ...response, products: sorted };
-  }
-  ```
-- **Why this is a compromise, not a complete replacement for server-side sorting**: the API response is paginated before this fallback runs, so the fallback only sorts the current page. If the server ignores `sortBy` and `order`, items across different pages are not guaranteed to be globally ordered. Server-side sorting should remain enabled; this client-side sort only makes the visible page deterministic.
+- **Symptom**: After clearing saved profile/shop data, the cart badge and in-memory cart could still show items until a reload.
+- **Reproduction / regression check**:
+  1. Add products to the cart and sign in.
+  2. Open Profile and choose the action that clears local shop data.
+  3. Confirm the cart badge and cart page update immediately without reloading.
+- **Tool and result**: Inspected the before/after Git diff (`git show 64cdb5d`). Before the fix, the profile page removed the cart's localStorage key directly; the fix calls the Cart context's `clearCart` operation so persistent and in-memory state stay synchronized.
+- **Root cause**: The profile page changed storage directly, bypassing the state owner responsible for the live cart.
+- **Fix**: [Commit 64cdb5d](https://github.com/qristinemirzoiani-byte/10X-shop-project/commit/64cdb5d) — clear cart context together with local data.
+- **What I learned**: Update shared state through its context/API rather than modifying its storage behind the state owner's back.
