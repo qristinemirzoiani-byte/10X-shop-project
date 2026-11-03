@@ -31,7 +31,7 @@
         <div className="relative">
             <input
             type={isPasswordField && showPassword ? 'text' : type}
-            className={`w-full px-4 py-2.5 text-sm rounded-xl border bg-slate-950/60 text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-pink-500/50 transition-all duration-300 ${
+            className={`w-full min-h-11 px-4 py-2.5 text-sm rounded-xl border bg-slate-950/60 text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-pink-500/50 transition-all duration-300 ${
                 error
                 ? 'border-rose-500/80 focus:border-pink-500'
                 : 'border-slate-800/80 focus:border-pink-500/80'
@@ -45,7 +45,7 @@
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 tabIndex={-1}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-pink-400 transition cursor-pointer p-1"
+                className="absolute right-1 top-1/2 -translate-y-1/2 min-w-11 min-h-11 flex items-center justify-center text-slate-500 hover:text-pink-400 transition cursor-pointer"
             >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>

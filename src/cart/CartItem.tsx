@@ -61,7 +61,7 @@ return (
             type="button"
             disabled={item.quantity <= 1}
             onClick={() => onUpdateQuantity(numericId, item.quantity - 1)}
-            className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-slate-700 disabled:opacity-30 transition cursor-pointer"
+            className="min-w-11 min-h-11 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-slate-700 disabled:opacity-30 transition cursor-pointer"
             >
             <Minus className="w-3.5 h-3.5" />
             </button>
@@ -72,7 +72,7 @@ return (
             type="button"
             disabled={item.quantity >= item.stock}
             onClick={() => onUpdateQuantity(numericId, item.quantity + 1)}
-            className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-slate-700 disabled:opacity-30 transition cursor-pointer"
+            className="min-w-11 min-h-11 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-slate-700 disabled:opacity-30 transition cursor-pointer"
             >
             <Plus className="w-3.5 h-3.5" />
             </button>
@@ -87,7 +87,7 @@ return (
         <button
             type="button"
             onClick={() => onRemove(numericId)}
-            className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition cursor-pointer"
+            className="min-w-11 min-h-11 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition cursor-pointer"
         >
             <Trash2 className="w-4 h-4" />
         </button>

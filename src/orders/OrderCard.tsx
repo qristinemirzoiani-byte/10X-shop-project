@@ -45,7 +45,7 @@
                 type="button"
                 onClick={() => onCancel(order.id)}
                 title="Cancel this order"
-                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-rose-400 hover:text-white hover:bg-rose-900/60 border border-rose-800/60 rounded-xl transition cursor-pointer"
+                className="inline-flex min-h-11 items-center gap-1 px-2.5 py-1 text-xs font-semibold text-rose-400 hover:text-white hover:bg-rose-900/60 border border-rose-800/60 rounded-xl transition cursor-pointer"
                 >
                 <Trash2 className="w-3 h-3" />
                 <span>Cancel</span>

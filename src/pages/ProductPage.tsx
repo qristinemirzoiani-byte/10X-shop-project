@@ -180,7 +180,7 @@ export default function ProductPage() {
                 <button
                     type="button"
                     onClick={() => navigate(-1)}
-                    className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-400 hover:text-pink-500 dark:text-slate-400 dark:hover:text-pink-400 transition cursor-pointer group"
+                    className="inline-flex min-h-11 items-center gap-2 px-2 text-xs sm:text-sm font-semibold text-slate-400 hover:text-pink-500 dark:text-slate-400 dark:hover:text-pink-400 transition cursor-pointer group"
                 >
                     <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
                     <span>Back to catalog</span>
@@ -224,11 +224,11 @@ export default function ProductPage() {
 
                     <div className="flex flex-wrap items-center gap-3 pt-3">
                         <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 p-1">
-                            <button aria-label="Decrease quantity" disabled={quantity <= 1} onClick={() => setQuantity((n) => Math.max(1, n - 1))} className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-slate-800 disabled:opacity-30 transition cursor-pointer">
+                            <button aria-label="Decrease quantity" disabled={quantity <= 1} onClick={() => setQuantity((n) => Math.max(1, n - 1))} className="min-w-11 min-h-11 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-slate-800 disabled:opacity-30 transition cursor-pointer">
                                 <Minus className="h-4 w-4" />
                             </button>
                             <span className="w-10 text-center font-bold text-slate-900 dark:text-white text-sm">{quantity}</span>
-                            <button aria-label="Increase quantity" disabled={quantity >= product.stock} onClick={() => setQuantity((n) => Math.min(product.stock, n + 1))} className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-slate-800 disabled:opacity-30 transition cursor-pointer">
+                            <button aria-label="Increase quantity" disabled={quantity >= product.stock} onClick={() => setQuantity((n) => Math.min(product.stock, n + 1))} className="min-w-11 min-h-11 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-slate-800 disabled:opacity-30 transition cursor-pointer">
                                 <Plus className="h-4 w-4" />
                             </button>
                         </div>

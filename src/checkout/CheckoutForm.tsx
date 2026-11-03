@@ -97,7 +97,7 @@
                 value={formData.fullName}
                 onChange={(e) => handleInputChange('fullName', e.target.value)}
                 placeholder="e.g. John Doe"
-                className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
+                className={`w-full min-h-11 px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
                 errors.fullName
                     ? 'border-rose-500 focus:border-rose-500'
                     : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500'
@@ -118,7 +118,7 @@
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 placeholder="e.g. john@example.com"
-                className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
+                className={`w-full min-h-11 px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
                 errors.email
                     ? 'border-rose-500 focus:border-rose-500'
                     : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500'
@@ -139,7 +139,7 @@
                 value={formData.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 placeholder="e.g. +995555123456"
-                className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
+                className={`w-full min-h-11 px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
                 errors.phone
                     ? 'border-rose-500 focus:border-rose-500'
                     : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500'
@@ -160,7 +160,7 @@
                 value={formData.address}
                 onChange={(e) => handleInputChange('address', e.target.value)}
                 placeholder="Street name, building, apartment"
-                className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
+                className={`w-full min-h-11 px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
                 errors.address
                     ? 'border-rose-500 focus:border-rose-500'
                     : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500'
@@ -181,7 +181,7 @@
                 value={formData.city}
                 onChange={(e) => handleInputChange('city', e.target.value)}
                 placeholder="e.g. Tbilisi"
-                className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
+                className={`w-full min-h-11 px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
                 errors.city
                     ? 'border-rose-500 focus:border-rose-500'
                     : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500'
@@ -202,7 +202,7 @@
                 value={formData.postalCode}
                 onChange={(e) => handleInputChange('postalCode', e.target.value)}
                 placeholder="e.g. 0179"
-                className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
+                className={`w-full min-h-11 px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
                 errors.postalCode
                     ? 'border-rose-500 focus:border-rose-500'
                     : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500'
@@ -221,7 +221,7 @@
             <select
                 value={formData.country}
                 onChange={(e) => handleInputChange('country', e.target.value)}
-                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                className="w-full min-h-11 px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
             >
                 {countries.map((c) => (
                 <option key={c} value={c}>

@@ -19,7 +19,7 @@
             onClick={onClick}
             className={({ isActive }) =>
             className ||
-            `relative p-2 rounded-xl transition ${
+            `relative min-w-11 min-h-11 flex items-center justify-center p-2 rounded-xl transition ${
                 isActive
                 ? 'text-pink-400 bg-pink-500/20 border border-pink-500/30'
                 : 'text-slate-700 dark:text-slate-300 hover:text-pink-500'

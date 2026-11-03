@@ -81,7 +81,7 @@
             <button
                 type="button"
                 onClick={onLogout}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-rose-300 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/50 transition cursor-pointer"
+                className="w-full min-h-11 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-rose-300 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/50 transition cursor-pointer"
             >
                 <LogOut className="w-4 h-4" /> Log out
             </button>
@@ -92,7 +92,7 @@
                 to="/login"
                 onClick={onClose}
                 className={({ isActive }) =>
-                `w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition cursor-pointer ${
+                `w-full min-h-11 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition cursor-pointer ${
                     isActive
                     ? 'bg-pink-500/40 border-pink-300 text-white shadow-[0_0_15px_rgba(244,63,94,0.3)]'
                     : 'bg-pink-500/25 hover:bg-pink-500/35 border border-pink-400/50 text-white'

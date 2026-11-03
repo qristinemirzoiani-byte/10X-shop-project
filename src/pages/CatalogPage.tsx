@@ -153,7 +153,7 @@
                 <button
                     type="button"
                     onClick={handleClearFilters}
-                    className="hover:text-pink-700 dark:hover:text-pink-300 font-bold ml-1 cursor-pointer"
+                    className="min-w-11 min-h-11 inline-flex items-center justify-center hover:text-pink-700 dark:hover:text-pink-300 font-bold ml-1 cursor-pointer"
                     title="Clear search"
                 >
                     ✕
@@ -178,7 +178,7 @@
 
         {/* Main Content Area */}
         {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 min-[481px]:grid-cols-2 min-[768px]:grid-cols-3 min-[1025px]:grid-cols-4 gap-5">
             {Array.from({ length: 8 }).map((_, i) => (
                 <SkeletonCard key={i} />
             ))}

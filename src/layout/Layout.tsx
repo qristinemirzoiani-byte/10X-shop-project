@@ -115,7 +115,7 @@
         {!isLogin && <Header />}
 
         {/* Main body layout container */}
-        <div className="flex-1 flex overflow-hidden relative z-10">
+        <div className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden relative z-10">
             {/* Stationary Left Sidebar */}
             {isCatalog && <Sidebar />}
 
@@ -123,7 +123,7 @@
             <main
             ref={mainRef}
             id="main-content"
-            className="flex-1 min-w-0 h-full overflow-y-auto no-scrollbar overflow-x-hidden px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col justify-between"
+            className="flex-1 min-w-0 min-h-0 lg:h-full overflow-y-auto no-scrollbar overflow-x-hidden px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col justify-between"
             >
             <div className="flex-1 pb-8">
                 <Outlet />

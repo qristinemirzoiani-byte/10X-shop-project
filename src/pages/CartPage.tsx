@@ -84,7 +84,7 @@ export default function CartPage() {
                         <button
                             type="button"
                             onClick={handleClearCart}
-                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 transition cursor-pointer"
+                            className="inline-flex min-h-11 items-center gap-1.5 px-2 text-xs font-semibold text-rose-600 hover:text-rose-700 transition cursor-pointer"
                         >
                             <Trash2 className="w-3.5 h-3.5" />
                             Clear cart

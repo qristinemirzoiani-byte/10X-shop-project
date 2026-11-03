@@ -52,7 +52,7 @@
             {/* Mobile Right Bar: Theme Toggle, Cart with Badge & Hamburger */}
             <div className="flex items-center gap-2 md:hidden">
                 <ThemeToggle
-                className="p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                className="min-w-11 min-h-11 p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                 iconClassName="w-5 h-5 text-pink-400 dark:text-pink-400"
                 />
                 <CartButton isMobile onClick={() => setMobileMenuOpen(false)} />
@@ -62,7 +62,7 @@
                 type="button"
                 onClick={() => setMobileMenuOpen((prev) => !prev)}
                 aria-label="Toggle menu"
-                className="p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                className="min-w-11 min-h-11 p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                 >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>

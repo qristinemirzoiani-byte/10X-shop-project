@@ -59,7 +59,7 @@
             onClick={() => setIsOpen((prev) => !prev)}
             aria-haspopup="listbox"
             aria-expanded={isOpen}
-            className={`w-full flex items-center justify-between gap-2.5 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-2xl border transition-all duration-200 cursor-pointer shadow-sm ${
+            className={`w-full min-h-11 flex items-center justify-between gap-2.5 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-2xl border transition-all duration-200 cursor-pointer shadow-sm ${
             isOpen
                 ? 'border-pink-500 ring-2 ring-pink-500/30 bg-white dark:bg-slate-900 text-pink-600 dark:text-pink-400 shadow-pink-500/10'
                 : 'border-pink-500/40 hover:border-pink-500 bg-white/90 dark:bg-slate-900/90 text-slate-800 dark:text-slate-100 hover:shadow-md'
@@ -88,7 +88,7 @@
                     role="option"
                     aria-selected={isSelected}
                     onClick={() => handleSelect(option.value)}
-                    className={`w-full flex items-center justify-between px-3.5 py-2 text-xs sm:text-sm font-medium rounded-xl transition-all cursor-pointer ${
+                    className={`w-full min-h-11 flex items-center justify-between px-3.5 py-2 text-xs sm:text-sm font-medium rounded-xl transition-all cursor-pointer ${
                     isSelected
                         ? 'bg-pink-500/15 dark:bg-pink-500/25 text-pink-600 dark:text-pink-400 font-bold border border-pink-500/30 shadow-xs'
                         : 'text-slate-700 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-slate-800/80 hover:text-pink-600 dark:hover:text-pink-300'

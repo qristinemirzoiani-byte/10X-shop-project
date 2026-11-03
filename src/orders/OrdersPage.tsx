@@ -131,7 +131,7 @@ export default function OrdersPage() {
                         <button
                             type="button"
                             onClick={handleClearAllOrders}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 transition cursor-pointer"
+                            className="flex min-h-11 items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 transition cursor-pointer"
                         >
                             <Trash2 className="w-3.5 h-3.5" />
                             <span>Clear All</span>
@@ -141,7 +141,7 @@ export default function OrdersPage() {
                     <button
                         type="button"
                         onClick={handleCreateMockOrder}
-                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-xl bg-pink-500/10 text-pink-500 hover:bg-pink-500/20 border border-pink-500/30 transition cursor-pointer"
+                        className="flex min-h-11 items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-xl bg-pink-500/10 text-pink-500 hover:bg-pink-500/20 border border-pink-500/30 transition cursor-pointer"
                     >
                         <PlusCircle className="w-3.5 h-3.5" />
                         <span>Add Mock Order</span>

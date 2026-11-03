@@ -92,7 +92,7 @@
             <button
                 type="button"
                 onClick={() => navigate('/orders')}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition mb-2"
+                className="inline-flex min-h-11 items-center gap-1.5 px-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition mb-2"
             >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 Back to Orders
@@ -108,7 +108,7 @@
             <button
             type="button"
             onClick={handleReorder}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition active:scale-95"
+            className="inline-flex min-h-11 items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition active:scale-95"
             >
             <RotateCcw className="w-4 h-4" />
             Reorder Items
@@ -124,10 +124,8 @@
             <div className="grid grid-cols-3 gap-2 relative">
             <div className="absolute top-5 left-1/6 right-1/6 h-1 bg-slate-200 dark:bg-slate-800 z-0" />
             <div
-                className="absolute top-5 left-1/6 h-1 bg-indigo-600 transition-all duration-500 z-0"
-                style={{
-                width: currentStepIndex === 0 ? '0%' : currentStepIndex === 1 ? '50%' : '100%',
-                }}
+                className="absolute top-5 left-1/6 right-1/6 h-1 bg-indigo-600 origin-left transition-all duration-500 z-0"
+                style={{ transform: `scaleX(${currentStepIndex / (steps.length - 1)})` }}
             />
 
             {steps.map((step, idx) => {

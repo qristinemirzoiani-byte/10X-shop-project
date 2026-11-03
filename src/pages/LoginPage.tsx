@@ -79,7 +79,7 @@
             <div className="pb-3 border-b border-slate-700/50 dark:border-slate-800/60">
             <Link
                 to="/"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-pink-400 transition cursor-pointer"
+                className="inline-flex min-h-11 items-center gap-1.5 px-2 text-xs font-semibold text-slate-400 hover:text-pink-400 transition cursor-pointer"
             >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back to catalog</span>
@@ -152,7 +152,7 @@
                     <button
                     type="button"
                     onClick={handleForgotPassword}
-                    className="text-[11px] font-medium text-pink-400 hover:text-pink-300 hover:underline cursor-pointer"
+                    className="inline-flex min-h-11 items-center px-2 text-[11px] font-medium text-pink-400 hover:text-pink-300 hover:underline cursor-pointer"
                     >
                     Forgot password?
                     </button>
@@ -188,7 +188,7 @@
             <button
                 type="button"
                 onClick={toggleMode}
-                className="font-semibold text-pink-400 hover:underline cursor-pointer bg-transparent border-none p-0 ml-1"
+                className="inline-flex min-h-11 items-center px-2 font-semibold text-pink-400 hover:underline cursor-pointer bg-transparent border-none ml-1"
             >
                 {isSignUp ? 'Log In' : 'Sign Up'}
             </button>

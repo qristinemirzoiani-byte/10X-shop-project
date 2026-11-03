@@ -32,7 +32,7 @@
     public override render() {
         if (this.state.hasError) {
         return (
-            <div className="min-h-screen flex items-center justify-center p-6 text-center bg-[#0B0F19] text-white">
+            <div className="min-h-screen flex items-center justify-center p-6 text-center bg-brand-dark text-white">
             <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
                 <div className="w-16 h-16 rounded-2xl bg-rose-500/20 text-rose-500 mx-auto flex items-center justify-center mb-4">
                 <AlertTriangle className="w-8 h-8" />
@@ -42,7 +42,7 @@
                 An unexpected error occurred. Please reload the application.
                 </p>
                 {this.state.error && (
-                <p className="text-xs font-mono bg-slate-950 p-3 rounded-xl text-rose-400 text-left mb-6 break-words">
+                <p className="text-xs font-mono bg-slate-950 p-3 rounded-xl text-rose-400 text-left mb-6 wrap-break-word">
                     {this.state.error.message}
                 </p>
                 )}

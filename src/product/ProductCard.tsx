@@ -103,7 +103,7 @@
                 disabled={isOutOfStock}
                 onClick={handleAddToCart}
                 aria-label={`Add ${product.title} to cart`}
-                className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all backdrop-blur-md cursor-pointer ${
+                className={`inline-flex min-h-11 items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all backdrop-blur-md cursor-pointer ${
                 isOutOfStock
                     ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed border border-slate-200 dark:border-slate-700'
                     : 'bg-pink-500/25 hover:bg-pink-500/40 text-pink-700 dark:text-pink-100 border border-pink-400/50 shadow-xs active:scale-95'

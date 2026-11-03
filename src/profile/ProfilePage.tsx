@@ -80,7 +80,7 @@ export default function ProfilePage() {
           <button
             type="button"
             onClick={toggleTheme}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-200 transition cursor-pointer"
+            className="inline-flex min-h-11 items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-200 transition cursor-pointer"
           >
             {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
             <span>Switch to {theme === 'dark' ? 'Light' : 'Dark'}</span>
@@ -104,7 +104,7 @@ export default function ProfilePage() {
           <button
             type="button"
             onClick={handleClearLocalData}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-xs font-bold transition shrink-0 cursor-pointer"
+            className="inline-flex min-h-11 items-center gap-1.5 px-4 py-2 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-xs font-bold transition shrink-0 cursor-pointer"
           >
             <Trash2 className="w-3.5 h-3.5" />
             Clear Local Data
@@ -121,7 +121,7 @@ export default function ProfilePage() {
           <button
             type="button"
             onClick={handleLogout}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold transition shrink-0 cursor-pointer"
+            className="inline-flex min-h-11 items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold transition shrink-0 cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             Log Out

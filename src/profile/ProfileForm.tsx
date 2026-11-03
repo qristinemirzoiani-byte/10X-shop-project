@@ -83,7 +83,7 @@ const handleSave = (e: React.FormEvent) => {
                     setFormData((p) => ({ ...p, firstName: e.target.value }));
                     if (errors.firstName) setErrors((p) => ({ ...p, firstName: undefined }));
                 }}
-                className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
+                className={`w-full min-h-11 px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
                     errors.firstName
                     ? 'border-rose-500 focus:border-rose-500'
                     : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500'
@@ -106,7 +106,7 @@ const handleSave = (e: React.FormEvent) => {
                     setFormData((p) => ({ ...p, lastName: e.target.value }));
                     if (errors.lastName) setErrors((p) => ({ ...p, lastName: undefined }));
                 }}
-                className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
+                className={`w-full min-h-11 px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
                     errors.lastName
                     ? 'border-rose-500 focus:border-rose-500'
                     : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500'
@@ -129,7 +129,7 @@ const handleSave = (e: React.FormEvent) => {
                     setFormData((p) => ({ ...p, email: e.target.value }));
                     if (errors.email) setErrors((p) => ({ ...p, email: undefined }));
                 }}
-                className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
+                className={`w-full min-h-11 px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
                     errors.email
                     ? 'border-rose-500 focus:border-rose-500'
                     : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500'
@@ -153,7 +153,7 @@ const handleSave = (e: React.FormEvent) => {
                     if (errors.phone) setErrors((p) => ({ ...p, phone: undefined }));
                 }}
                 placeholder="+995 555 12 34 56"
-                className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
+                className={`w-full min-h-11 px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
                     errors.phone
                     ? 'border-rose-500 focus:border-rose-500'
                     : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500'
@@ -167,7 +167,7 @@ const handleSave = (e: React.FormEvent) => {
 
             <button
             type="submit"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition active:scale-95 cursor-pointer"
+            className="inline-flex min-h-11 items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition active:scale-95 cursor-pointer"
             >
             <Save className="w-4 h-4" />
             Save Changes
