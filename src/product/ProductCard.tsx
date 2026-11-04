@@ -7,9 +7,10 @@
     export interface ProductCardProps {
     product: Product;
     onAdd: (p: Product) => void;
+        prioritizeImage?: boolean;
     }
 
-    export const ProductCard = memo(function ProductCard({ product, onAdd }: ProductCardProps) {
+    export const ProductCard = memo(function ProductCard({ product, onAdd, prioritizeImage = false }: ProductCardProps) {
     const navigate = useNavigate();
 
     const handleCardClick = () => {
@@ -36,7 +37,8 @@
             <img
             src={product.thumbnail}
             alt={product.title}
-            loading="lazy"
+            loading={prioritizeImage ? 'eager' : 'lazy'}
+            fetchPriority={prioritizeImage ? 'high' : 'auto'}
             width={240}
             height={240}
             className="object-contain w-full h-full max-h-32 group-hover:scale-105 transition-transform duration-300"

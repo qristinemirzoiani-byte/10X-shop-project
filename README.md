@@ -5,8 +5,8 @@ A modern, responsive e-commerce web application built with **React 19**, **TypeS
 ---
 
 ## 🚀 Live Demo & Status
-- **Current Milestone**: CORE feature set implemented; FULL release verification in progress (Firefox/WebKit and deployed Lighthouse checks remain).
-- **Live Demo**: No public application URL has been provided yet. The [Vercel project dashboard](https://10-x-shop-project-7u3arqb6i-qristi.vercel.app) is a management link, not a public demo.
+- **Current Milestone**: CORE feature set implemented; all 28 Chrome, Edge, Firefox, and WebKit checks pass. Public deployment is live; Lighthouse results and remaining release work are documented in [REPORT.md](./REPORT.md).
+- **Live Demo**: [10X Shop on Vercel](https://10-x-shop-project-jaflf0yr9-qristi.vercel.app/)
 - **Node Environment**: Node.js 20+ / Vite.
 
 ---
@@ -54,7 +54,7 @@ Email format checking in sign-up mode.
 
 💻 Getting Started Locally
 Clone the repository:
-git clone <https://github.com/qristinemirzoiani-byte/10X-shop-project>
+git clone https://github.com/qristinemirzoiani-byte/10X-shop-project.git
 cd 10X-shop-project
 
 Install dependencies:

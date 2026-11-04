@@ -7,7 +7,7 @@
 - Mobile viewport: 375 × 812 CSS pixels.
 - Responsive grid checks: 375, 480, 481, 767, 768, 1024, 1025, and 1280 pixels.
 - Protected routes were opened with demo user, cart, and order data in local storage.
-- The checks measured document width, visible buttons and form-control sizes, and unintended horizontal overflow. They are layout checks, not a full functional or accessibility audit.
+- The responsive checks measured document width, visible buttons and form-control sizes, and unintended horizontal overflow. A separate end-to-end test covers the guest journey from catalog to product, cart, sign-in, checkout, and order confirmation, including cart clearing and saved order state. These checks are not a full accessibility audit.
 
 ## Page × device × browser results
 
@@ -70,8 +70,8 @@ WebKit is Safari's engine, but it does not replace testing on Apple Safari itsel
 |---|---|---|
 | Google Chrome 156 | All eight routes at 375/768/1280px; grid at the widths above | Verified |
 | Microsoft Edge 156 | All eight routes at 375/768/1280px; grid at the widths above | Verified |
-| Playwright Firefox | Run locally with `npm.cmd run test:e2e -- --project=firefox` | Browser install pending |
-| Playwright WebKit | Safari-engine approximation; run locally with `npm.cmd run test:e2e -- --project=webkit` | Browser install pending |
+| Playwright Firefox 157 | All eight routes, responsive checks, catalog controls, and guest order flow | Verified — 7 tests passed |
+| Playwright WebKit 27.2 | All eight routes, responsive checks, catalog controls, and guest order flow; Safari-engine approximation | Verified — 7 tests passed |
 | Apple Safari | WebKit engine approximation only; no Safari run | Not independently verified |
 
-Passing Playwright projects verifies the listed checks in those engines, not every browser-specific behavior or full accessibility. “Pending” does not mean “failed”; update this table from actual test results before claiming coverage.
+The complete Playwright run passed all 28 tests across Chrome, Edge, Firefox, and WebKit. Passing these checks verifies the listed behavior in those engines, not every browser-specific behavior or full accessibility. WebKit is not a substitute for testing on Apple Safari.

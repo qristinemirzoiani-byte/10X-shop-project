@@ -67,7 +67,7 @@ const viewports = [
   { name: 'desktop 1280px', width: 1280, height: 812 },
 ];
 
-async function installApiFixtures(page) {
+async function installApiFixtures(page, { seedSession = true } = {}) {
   await page.route('https://dummyjson.com/**', async (route) => {
     const url = new URL(route.request().url());
     let body;
@@ -83,22 +83,24 @@ async function installApiFixtures(page) {
     await route.fulfill({ json: body });
   });
 
-  await page.addInitScript(({ user, cart, orders }) => {
-    localStorage.setItem('shop_user', JSON.stringify(user));
-    localStorage.setItem('shop_cart', JSON.stringify(cart));
-    localStorage.setItem('shop_orders', JSON.stringify(orders));
-  }, {
-    user: {
-      username: 'demo',
-      isLoggedIn: true,
-      firstName: 'Demo',
-      lastName: 'User',
-      email: 'demo@example.com',
-      phone: '5551234',
-    },
-    cart: { items: [cartItem], promoCode: null },
-    orders: [testOrder],
-  });
+  if (seedSession) {
+    await page.addInitScript(({ user, cart, orders }) => {
+      localStorage.setItem('shop_user', JSON.stringify(user));
+      localStorage.setItem('shop_cart', JSON.stringify(cart));
+      localStorage.setItem('shop_orders', JSON.stringify(orders));
+    }, {
+      user: {
+        username: 'demo',
+        isLoggedIn: true,
+        firstName: 'Demo',
+        lastName: 'User',
+        email: 'demo@example.com',
+        phone: '5551234',
+      },
+      cart: { items: [cartItem], promoCode: null },
+      orders: [testOrder],
+    });
+  }
 }
 
 for (const viewport of viewports) {
@@ -108,10 +110,12 @@ for (const viewport of viewports) {
     await installApiFixtures(page);
 
     for (const route of routes) {
-      await page.goto(route.path);
+      await page.goto(route.path, { waitUntil: 'commit' });
 
       if (route.path === '/login') {
         await expect(page.getByText(route.marker)).toBeVisible();
+      } else if (route.path === '/products/1') {
+        await expect(page.getByRole('heading', { name: route.marker, exact: true })).toBeVisible({ timeout: 60_000 });
       } else {
         await expect(page.getByRole('heading', { name: route.marker, exact: true })).toBeVisible();
       }
@@ -145,9 +149,13 @@ test('catalog grid matches documented CSS breakpoint thresholds', async ({ page 
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 375, height: 812 });
   await installApiFixtures(page);
-  await page.goto('/');
+  await page.goto('/', { waitUntil: 'commit' });
   await expect(page.getByRole('heading', { name: 'Products Catalog', exact: true })).toBeVisible();
   await expect(page.getByText('Test Product 1').first()).toBeVisible();
+  await expect(page.getByRole('img', { name: 'Test Product 1' }).first()).toHaveAttribute('loading', 'eager');
+  await expect(page.getByRole('img', { name: 'Test Product 1' }).first()).toHaveAttribute('fetchpriority', 'high');
+  await expect(page.getByRole('img', { name: 'Test Product 2' }).first()).toHaveAttribute('loading', 'lazy');
+  await expect(page.locator('link[rel="preload"][as="image"][data-catalog-image-preload]')).toHaveAttribute('href', product.thumbnail);
   await expect(page.locator('main .grid').first().locator(':scope > *')).toHaveCount(12);
   const pagination = page.getByRole('navigation', { name: 'Pagination' });
   await expect(pagination).toBeVisible();
@@ -186,7 +194,10 @@ test('catalog categories use an accessible dropdown on mobile and tablet', async
 
   for (const width of [375, 768]) {
     await page.setViewportSize({ width, height: 812 });
-    await page.goto('/?page=1');
+    await page.goto('/?page=1', { waitUntil: 'commit' });
+    await page.addStyleTag({
+      content: '*, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }',
+    });
 
     const menuButton = page.getByRole('button', { name: 'Browse categories. Current category: All Products' });
     const categoryNavigation = page.getByRole('navigation', { name: 'Sidebar categories' });
@@ -211,11 +222,48 @@ test('catalog categories use an accessible dropdown on mobile and tablet', async
 });
 
 test('catalog keeps its category list visible on desktop', async ({ page }) => {
+  test.setTimeout(120_000);
   await page.setViewportSize({ width: 1280, height: 812 });
   await installApiFixtures(page);
-  await page.goto('/');
+  await page.goto('/', { waitUntil: 'commit' });
 
   await expect(page.getByRole('button', { name: /Browse categories/ })).toBeHidden();
   await expect(page.getByRole('navigation', { name: 'Sidebar categories' })).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'Sidebar categories' }).getByRole('button', { name: 'Beauty', exact: true })).toBeVisible();
+});
+
+test('guest can complete the catalog-to-order flow', async ({ page }) => {
+  test.setTimeout(120_000);
+  await installApiFixtures(page, { seedSession: false });
+  await page.goto('/', { waitUntil: 'commit' });
+
+  await expect(page.getByRole('heading', { name: 'Products Catalog', exact: true })).toBeVisible();
+  await page.getByText('Test Product 1', { exact: true }).click({ force: true });
+  await expect(page).toHaveURL(/\/products\/1$/);
+  await expect(page.getByRole('heading', { name: 'Test Product', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Add to cart' }).click();
+
+  await page.getByRole('link', { name: 'Cart with 1 items' }).click();
+  await expect(page).toHaveURL(/\/cart$/);
+  await expect(page.getByRole('heading', { name: 'Shopping Cart', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Proceed to Checkout' }).click();
+  await expect(page).toHaveURL(/\/login$/);
+
+  await page.locator('input[autocomplete="username"]').fill('demo');
+  await page.locator('input[type="password"]').fill('demo-password');
+  await page.getByRole('button', { name: 'Log In' }).click();
+
+  await expect(page).toHaveURL(/\/checkout$/);
+  await expect(page.getByRole('heading', { name: 'Checkout', exact: true })).toBeVisible();
+  await page.getByPlaceholder('e.g. John Doe').fill('Demo User');
+  await page.getByPlaceholder('e.g. john@example.com').fill('demo@example.com');
+  await page.getByPlaceholder('e.g. +995555123456').fill('+995555123456');
+  await page.getByPlaceholder('Street name, building, apartment').fill('1 Main Street');
+  await page.getByPlaceholder('e.g. Tbilisi').fill('Tbilisi');
+  await page.getByPlaceholder('e.g. 0179').fill('0179');
+  await page.getByRole('button', { name: /Place Order/ }).click();
+
+  await expect(page.getByRole('heading', { name: 'Thank you! Your order has been placed.' })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('shop_cart') || '{"items":[]}').items)).toEqual([]);
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('shop_orders') || '[]').length)).toBe(1);
 });

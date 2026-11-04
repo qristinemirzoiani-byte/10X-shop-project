@@ -15,6 +15,20 @@
     import { useCart } from '../contexts/CartContext';
     import { buildProductsUrl } from '../utils/url';
 
+    function preloadCatalogImage(src: string) {
+        const current = document.querySelector<HTMLLinkElement>('link[data-catalog-image-preload]');
+        if (current?.href === src) return;
+
+        current?.remove();
+        const preload = document.createElement('link');
+        preload.rel = 'preload';
+        preload.as = 'image';
+        preload.href = src;
+        preload.fetchPriority = 'high';
+        preload.dataset.catalogImagePreload = 'true';
+        document.head.append(preload);
+    }
+
     export default function CatalogPage() {
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -37,10 +51,14 @@
         limit,
     }), [queryParam, categoryParam, sortParam, pageParam, limit]);
     const requestUrl = buildProductsUrl(requestParams);
-    const loadProducts = useCallback(
-        (signal: AbortSignal) => fetchProducts(requestParams, signal),
-        [requestParams],
-    );
+    const loadProducts = useCallback(async (signal: AbortSignal) => {
+        const response = await fetchProducts(requestParams, signal);
+        const firstProduct = response.products[0];
+        if (firstProduct && !signal.aborted) {
+            preloadCatalogImage(firstProduct.thumbnail);
+        }
+        return response;
+    }, [requestParams]);
     const { state: productsState, retry } = useFetch<ProductsResponse>(requestUrl, loadProducts);
     const loading = productsState.status === 'loading' || productsState.status === 'idle';
     const error = productsState.status === 'error' ? productsState.message : null;

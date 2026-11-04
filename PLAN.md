@@ -17,7 +17,7 @@
 | Catalog & product discovery | Product API/types, product cards, catalog list. | Search, category filtering, sorting, pagination, responsive grid, loading/error/empty states, details, gallery, and reviews. | CORE and FULL implemented. Grid breakpoints are verified as implemented, not as an independently supplied product requirement. |
 | Cart & checkout | Add/remove/change quantity and calculate totals. | Persisted cart, stock checks, promo code, validated checkout, order creation and saved shipping details. | CORE and FULL implemented. Orders and checkout are local/demo flows. |
 | Orders & customer account | Show saved orders to the signed-in demo user. | Order details/status, reorder, profile editing, preferences, and local-data controls. | CORE and FULL implemented. |
-| Quality & release | Type-check/build, lint, and route smoke checks. | Repeatable cross-browser/responsive suite, release evidence, accessibility/performance review. | Chrome/Edge responsive checks and build/lint pass. Firefox/WebKit execution and deployed Lighthouse verification remain open. |
+| Quality & release | Type-check/build, lint, and route smoke checks. | Repeatable cross-browser/responsive suite, release evidence, accessibility/performance review. | Build, lint, responsive checks, and catalog-to-order flow pass in Chrome, Edge, Firefox, and WebKit. Public deployment and direct SPA routes verified; Lighthouse Performance median is 68 and needs optimization. |
 
 ### Main implementation entry points
 
@@ -43,15 +43,15 @@ Effort is estimated from a clean project start. The status column records what i
 | 3.2 | Implement checkout validation and local order creation | Checkout | 5 h | 3 | Done — checkout stores an order in browser storage. |
 | 3.3 | Implement order history/details, status, and reorder | Orders | 5 h | 3 | Done — order routes and components exist. |
 | 4.1 | Complete responsive layout and touch-target checks | Responsive UX | 5 h | 4 | Done for checked layouts — all eight routes at 375/768/1280px in Chrome/Edge; pagination is included in the 44px mobile check. |
-| 4.2 | Add repeatable Playwright route and breakpoint checks | Quality | 5 h | 4 | Done for Chrome/Edge — 8 tests pass; Firefox/WebKit browser install and run remain open. |
-| 4.3 | Build, lint, update compatibility evidence and project docs | Release | 4 h | 4 | Partially done — build/lint and Chrome/Edge matrix pass; Firefox/WebKit status is pending. |
-| 4.4 | Run deployed Lighthouse audit and address release thresholds | Release | 5 h | 4 | Open — current report does not confirm the FULL Performance target. |
+| 4.2 | Add repeatable Playwright route and breakpoint checks | Quality | 5 h | 4 | Done — all 28 responsive and checkout-flow tests pass in Chrome, Edge, Firefox, and WebKit. |
+| 4.3 | Build, lint, update compatibility evidence and project docs | Release | 4 h | 4 | Done — typecheck, build, lint, and four-engine test evidence are recorded. |
+| 4.4 | Deploy production build and verify release thresholds | Release | 5 h | 4 | In progress — public Performance median is 68; a local LCP preload change reduced median image-load delay by about 611 ms, but needs deployment and remeasurement. |
 |  | **Total** |  | **72 h** | **4 weeks** | **Feature work complete; release verification remains.** |
 
 ## Remaining release work
 
-1. Install and run Firefox and WebKit projects using the commands in [COMPATIBILITY.md](./COMPATIBILITY.md); record actual results. WebKit is not a substitute for real Safari.
-2. Run Lighthouse against the deployed production site in an incognito session. Record repeatable results and resolve the FULL performance target (Performance ≥85) before marking it complete.
+1. Deploy the catalog LCP image-priority/preload change and re-run Lighthouse. Continue optimizing measured payload/image opportunities until the FULL performance median is at least 85.
+2. Address the reported color-contrast and heading-order accessibility findings, then rerun the audit and document the results.
 3. If any verification fails, fix the cause, rerun the affected check, and update the compatibility evidence; do not mark a check complete based only on screenshots or an unexecuted test.
 
 ## Risks and mitigations
@@ -60,7 +60,7 @@ Effort is estimated from a clean project start. The status column records what i
 |---|---|---|---|
 | DummyJSON API or image CDN is unavailable, slow, or changes its response. | Medium / High | Keep explicit loading/error/empty UI; validate API payloads; use deterministic local fixtures for layout tests. | API smoke check fails or page stays loading: capture the failure, verify the error UI, and retest with fixtures separately from the live service. |
 | Client-side demo authentication and localStorage may be mistaken for production-grade account, payment, or order security. | Medium / High | Clearly label flows as demos; do not store secrets or real payment data; use a trusted backend and server-side authorization before production. | Before real users or payments: block release until backend auth, authorization, and payment integration are reviewed. |
-| Browser-engine differences, uninstalled browser binaries, or slow downloads leave cross-browser claims incomplete. | Medium / Medium | Run the checked-in Playwright suite; pin/review its dependency; keep browser statuses “pending” until executed; maintain a separate Safari check if Safari support is required. | Engine install/test fails: report the environment limitation and do not claim that engine passed. |
+| Browser-engine differences, uninstalled browser binaries, or slow downloads leave cross-browser claims incomplete. | Medium / Medium | Run the checked-in Playwright suite and maintain a separate Safari check if Safari support is required. | An engine test fails: report the environment limitation and do not claim that engine passed. |
 | External images, large assets, or variable network/device performance miss the performance target. | Medium / High | Measure the deployed build with repeated Lighthouse runs; compare medians; optimize the measured bottleneck rather than relying on one noisy local score. | Median Performance is below 85: profile the production page, address the largest measured opportunity, and rerun. |
 | Responsive changes regress an existing route or touch target. | Medium / Medium | Run every route at 375/768/1280px in Chrome and Edge; keep overflow and 44px checks in the automated suite. | Any assertion fails: treat it as a release blocker, fix the affected layout, and rerun the full browser matrix. |
 
@@ -74,11 +74,11 @@ Effort is estimated from a clean project start. The status column records what i
 
 ### FULL — release-ready verification
 
-- [x] Chrome and Edge Playwright route checks pass at 375 × 812, 768 × 812, and 1280 × 812 for all eight documented routes.
+- [x] Chrome, Edge, Firefox, and WebKit Playwright suites pass, including all eight routes at 375 × 812, 768 × 812, and 1280 × 812 and the guest catalog-to-order flow.
 - [x] At 375px, no unexpected horizontal overflow is present and visible buttons/form controls meet the 44 × 44px minimum.
 - [x] Catalog grid columns match the tested implementation at 375, 480, 481, 767, 768, 1024, 1025, and 1280px.
-- [ ] Firefox and WebKit Playwright projects have been installed, executed, and their real outcomes recorded. Safari-specific support is not claimed from WebKit alone.
-- [ ] Deployed Lighthouse results are recorded from repeat runs; FULL performance median is at least 85. Accessibility and Best Practices results are also documented, with regressions from the measured baseline explained.
+- [x] Firefox and WebKit Playwright projects have been installed, executed, and their real outcomes recorded. Safari-specific support is not claimed from WebKit alone.
+- [ ] Deployed Lighthouse results are recorded from repeat runs; FULL performance median is at least 85. Current median is 68. Accessibility and Best Practices results are documented; reported accessibility findings still need review.
 - [ ] Compatibility and release documents match the latest executed tests; no “pass” is based on an unrun check.
 
 The project is **CORE complete** and **FULL release verification in progress** until all unchecked FULL criteria are evidenced.

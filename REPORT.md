@@ -56,7 +56,7 @@ The 10X Shop application is designed with modern React 19 principles, prioritizi
   | Total Blocking Time | 360 ms | 440 ms | 80 ms slower |
   | Cumulative Layout Shift | 0.025 | 0.025 | No measured change |
 
-- **Caveat**: Lighthouse warned that this machine's CPU is slower than expected. A repeat after-run scored 79 for Performance, so these single-run timing differences are noisy and do not establish that preconnect caused the score drop. The `uses-rel-preconnect` opportunity was resolved, but the FULL Performance target (≥85) is not confirmed by the after-run. Re-run on the deployed site in an incognito window for the required deployment measurement.
+- **Caveat**: Lighthouse warned that this machine's CPU is slower than expected. A repeat after-run scored 79 for Performance, so these single-run timing differences are noisy and do not establish that preconnect caused the score drop. The `uses-rel-preconnect` opportunity was resolved, but the FULL Performance target (≥85) was not confirmed locally.
 - **Before report**:
 
   ![Lighthouse before report](./docs/lighthouse/before.png)
@@ -64,6 +64,29 @@ The 10X Shop application is designed with modern React 19 principles, prioritizi
 - **After report**:
 
   ![Lighthouse after report](./docs/lighthouse/after.png)
+
+### Deployed production audit
+
+- **URL**: [10X Shop production deployment](https://10-x-shop-project-jaflf0yr9-qristi.vercel.app/)
+- **Method**: Lighthouse CLI 12.8.2, three sequential audits of the public production URL using headless Chrome with an isolated incognito profile. Default mobile form factor; Performance, Accessibility, and Best Practices categories.
+- **Scores**:
+
+  | Category | Run 1 | Run 2 | Run 3 | Median |
+  | --- | ---: | ---: | ---: | ---: |
+  | Performance | 59 | 79 | 68 | **68** |
+  | Accessibility | 93 | 93 | 93 | **93** |
+  | Best Practices | 96 | 96 | 96 | **96** |
+
+- **Performance metrics**: FCP 2.0/1.8/1.9 s; LCP 3.0/3.0/3.2 s; TBT 1,520/490/810 ms; CLS 0.015 for all three runs.
+- **Findings**: The LCP element was a lazy-loaded product thumbnail, with approximately 66% of LCP spent in load delay. Lighthouse also flagged the city background JPEG for a next-generation format and estimated 34 KiB of unused JavaScript in the main bundle. Accessibility findings were insufficient color contrast and a skipped heading level. The legible-font-size audit reported 55.95% legible text.
+- **Outcome**: Public deployment and direct SPA route serving are verified, but the FULL Performance median target (≥85) is not met. Optimize the measured LCP/load-delay and payload bottlenecks, then redeploy and repeat the audit. Do not treat these results as passing the performance criterion.
+
+### Local LCP image-loading change
+
+- The first catalog product image was rendered with `loading="lazy"`, although Lighthouse repeatedly selected it as the LCP element. The first card now uses eager loading and `fetchpriority="high"`; after the catalog API response identifies its actual first product, the app preloads that image before rendering the result.
+- On the local production preview, three Lighthouse runs before dynamic preloading recorded a median LCP resource-load delay of 1,704 ms. Three runs after the change recorded a median of 1,093 ms (about 611 ms lower). The overall Performance scores were noisy (74/71/75 before; 69/74/57 after), so this experiment does **not** establish an overall score improvement or meet the ≥85 target.
+- The post-change LCP discovery and preload audits pass. The local post-change LCP scores were 3.4/3.2/3.7 s (median 3.4 s), and TBT was 710/550/1,610 ms; these variable results reinforce that the local run is not proof of the required production threshold. Lighthouse still reports about 33 KiB unused JavaScript, and Accessibility still reports contrast and heading-order issues.
+- The image behavior is covered by the catalog Playwright test. This change is not yet included in the public deployment; redeploy before drawing conclusions from another production audit.
 
 ## 📅 Progress Report — Session Highlights
 
