@@ -1,12 +1,15 @@
-    import { useRef, useEffect } from 'react';
+    import { lazy, Suspense, useRef, useEffect } from 'react';
     import { Outlet, useLocation, useSearchParams } from 'react-router';
     import { Header } from './Header';
     import { Footer } from './Footer';
     import { ScrollToTop } from '../components/ScrollToTop';
-    import { Sidebar } from './Sidebar';
+    const Sidebar = lazy(async () => {
+        const module = await import('./Sidebar');
+        return { default: module.Sidebar };
+    });
 
-    import beautyLocal from '../assets/beauty-bg.jpg';
-    import cityLocal from '../assets/city.jpg';
+    import beautyLocal from '../assets/beauty-bg.webp';
+    import cityLocal from '../assets/city.webp';
 
     export function Layout() {
     const location = useLocation();
@@ -96,9 +99,7 @@
                 src={beautyImage}
                 onError={(e) => {
                 const target = e.currentTarget;
-                if (!target.src.includes('beauty-bg.jpg')) {
-                    target.src = '/beauty-bg.jpg';
-                } else if (target.src !== onlineBeautyFallback) {
+                if (target.src !== onlineBeautyFallback) {
                     target.src = onlineBeautyFallback;
                 }
                 }}
@@ -117,7 +118,11 @@
         {/* Main body layout container */}
         <div className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden relative z-10">
             {/* Stationary Left Sidebar */}
-            {isCatalog && <Sidebar />}
+            {isCatalog && (
+                <Suspense fallback={null}>
+                    <Sidebar />
+                </Suspense>
+            )}
 
             {/* Right scrollable catalog content area. Footer is inside scroll flow at bottom */}
             <main

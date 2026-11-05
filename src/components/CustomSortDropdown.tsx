@@ -53,7 +53,6 @@
 
     return (
         <div className="relative min-w-44 sm:min-w-48 z-30" ref={dropdownRef}>
-        {/* მთავარი ღილაკი მოუმრგვალებული კუთხეებით */}
         <button
             type="button"
             onClick={() => setIsOpen((prev) => !prev)}

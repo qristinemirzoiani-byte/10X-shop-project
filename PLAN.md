@@ -17,7 +17,7 @@
 | Catalog & product discovery | Product API/types, product cards, catalog list. | Search, category filtering, sorting, pagination, responsive grid, loading/error/empty states, details, gallery, and reviews. | CORE and FULL implemented. Grid breakpoints are verified as implemented, not as an independently supplied product requirement. |
 | Cart & checkout | Add/remove/change quantity and calculate totals. | Persisted cart, stock checks, promo code, validated checkout, order creation and saved shipping details. | CORE and FULL implemented. Orders and checkout are local/demo flows. |
 | Orders & customer account | Show saved orders to the signed-in demo user. | Order details/status, reorder, profile editing, preferences, and local-data controls. | CORE and FULL implemented. |
-| Quality & release | Type-check/build, lint, and route smoke checks. | Repeatable cross-browser/responsive suite, release evidence, accessibility/performance review. | Build, lint, responsive checks, and catalog-to-order flow pass in Chrome, Edge, Firefox, and WebKit. Public deployment and direct SPA routes verified; Lighthouse Performance median is 68 and needs optimization. |
+| Quality & release | Type-check/build, lint, and route smoke checks. | Repeatable cross-browser/responsive suite, release evidence, accessibility/performance review. | Build, lint, responsive checks, and catalog-to-order flow pass in Chrome, Edge, Firefox, and WebKit. Public deployment and direct SPA routes verified; the public Lighthouse Performance median remains 68. Local image/preload and startup optimizations score a median 74, still below target and awaiting deployment. |
 
 ### Main implementation entry points
 
@@ -45,12 +45,12 @@ Effort is estimated from a clean project start. The status column records what i
 | 4.1 | Complete responsive layout and touch-target checks | Responsive UX | 5 h | 4 | Done for checked layouts — all eight routes at 375/768/1280px in Chrome/Edge; pagination is included in the 44px mobile check. |
 | 4.2 | Add repeatable Playwright route and breakpoint checks | Quality | 5 h | 4 | Done — all 28 responsive and checkout-flow tests pass in Chrome, Edge, Firefox, and WebKit. |
 | 4.3 | Build, lint, update compatibility evidence and project docs | Release | 4 h | 4 | Done — typecheck, build, lint, and four-engine test evidence are recorded. |
-| 4.4 | Deploy production build and verify release thresholds | Release | 5 h | 4 | In progress — public Performance median is 68; a local LCP preload change reduced median image-load delay by about 611 ms, but needs deployment and remeasurement. |
+| 4.4 | Deploy production build and verify release thresholds | Release | 5 h | 4 | In progress — public Performance median is 68. Local image, preload, and route-splitting changes score a median 74; the LCP render delay still dominates, and the changes need deployment and remeasurement. |
 |  | **Total** |  | **72 h** | **4 weeks** | **Feature work complete; release verification remains.** |
 
 ## Remaining release work
 
-1. Deploy the catalog LCP image-priority/preload change and re-run Lighthouse. Continue optimizing measured payload/image opportunities until the FULL performance median is at least 85.
+1. Deploy the catalog LCP image-priority/preload, WebP background, and sidebar code-splitting changes and re-run Lighthouse. Continue optimizing the measured LCP render delay until the FULL performance median is at least 85.
 2. Address the reported color-contrast and heading-order accessibility findings, then rerun the audit and document the results.
 3. If any verification fails, fix the cause, rerun the affected check, and update the compatibility evidence; do not mark a check complete based only on screenshots or an unexecuted test.
 

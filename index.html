@@ -6,6 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://dummyjson.com" crossorigin />
     <link rel="preconnect" href="https://cdn.dummyjson.com" crossorigin />
+    <link
+      rel="preload"
+      as="image"
+      href="https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp"
+      fetchpriority="high"
+      data-catalog-image-preload
+    />
+    <script>
+      if (location.pathname === '/' && location.search === '') {
+        const productsPreload = document.createElement('link');
+        productsPreload.rel = 'preload';
+        productsPreload.as = 'fetch';
+        productsPreload.href = 'https://dummyjson.com/products?limit=12&skip=0';
+        productsPreload.crossOrigin = 'anonymous';
+        document.head.append(productsPreload);
+      }
+    </script>
     <title>10x-shop-project</title>
   </head>
   <body>

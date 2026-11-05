@@ -88,6 +88,22 @@ The 10X Shop application is designed with modern React 19 principles, prioritizi
 - The post-change LCP discovery and preload audits pass. The local post-change LCP scores were 3.4/3.2/3.7 s (median 3.4 s), and TBT was 710/550/1,610 ms; these variable results reinforce that the local run is not proof of the required production threshold. Lighthouse still reports about 33 KiB unused JavaScript, and Accessibility still reports contrast and heading-order issues.
 - The image behavior is covered by the catalog Playwright test. This change is not yet included in the public deployment; redeploy before drawing conclusions from another production audit.
 
+### Local follow-up performance work — 2026-11-05
+
+- The default catalog product image is now preloaded from the document head, and the default products API request starts before the app mounts. The dynamic catalog preload still replaces the image URL when filters select a different first product.
+- The city and floral background assets were converted to WebP: city 40,126 → 21,698 bytes; beauty 994,378 → 169,416 bytes. The sidebar is loaded as a separate route chunk; the main entry bundle decreased from 276.30 KB (87.00 KB gzip) to 262.65 KB (82.33 KB gzip).
+- **Method**: Lighthouse CLI 12.8.2, local Vite production preview, headless Chrome, mobile form factor, Performance category only; three sequential runs.
+- **Results**:
+
+  | Metric | Run 1 | Run 2 | Run 3 | Median |
+  | --- | ---: | ---: | ---: | ---: |
+  | Performance | 74 | 76 | 73 | **74** |
+  | LCP | 3.3 s | 3.2 s | 3.3 s | **3.3 s** |
+  | TBT | 590 ms | 510 ms | 470 ms | **510 ms** |
+
+- The modern-image-formats audit now passes and the default LCP image has zero resource-load delay. Rendering still accounts for roughly 80% of LCP, and Lighthouse estimates 32 KiB of unused JavaScript; the local Performance median remains below the ≥85 target. These local runs do not establish a deployed result, and their variance does not prove a score increase.
+- Type-check, build, lint, and the catalog responsive/image-priority test passed in Chrome, Edge, Firefox, and WebKit. The latest local changes are not deployed; the public score remains the previously recorded median of 68. Accessibility and Best Practices were not re-audited in this follow-up.
+
 ## 📅 Progress Report — Session Highlights
 
 ### 1. Features & Components Implemented
