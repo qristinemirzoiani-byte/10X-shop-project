@@ -64,7 +64,7 @@
             value={term}
             onChange={(e) => setTerm(e.target.value)}
             placeholder="Search products..."
-            className="w-full min-h-11 pl-9.5 pr-8 py-2 text-xs sm:text-sm rounded-full border border-slate-700/60 bg-black/45 hover:bg-black/60 text-white placeholder-slate-400 focus:outline-none focus:border-pink-500/70 focus:ring-2 focus:ring-pink-500/30 backdrop-blur-md transition-all shadow-sm"
+            className="w-full h-8.5 pl-9.5 pr-8 py-1 text-xs sm:text-sm rounded-full border border-slate-700/60 bg-black/45 hover:bg-black/60 text-white placeholder-slate-400 focus:outline-none focus:border-pink-500/70 focus:ring-2 focus:ring-pink-500/30 backdrop-blur-md transition-all shadow-sm"
         />
         {term && (
             <button

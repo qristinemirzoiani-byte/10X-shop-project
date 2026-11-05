@@ -17,7 +17,7 @@
             <NavLink
             to="/profile"
             className={({ isActive }) =>
-                `h-10 flex items-center gap-2 px-3.5 rounded-xl border transition cursor-pointer ${
+                `h-[34px] flex items-center gap-2 px-3.5 rounded-xl border transition cursor-pointer ${
                 isActive
                     ? 'bg-pink-500/20 text-pink-300 border-pink-400/50 shadow-[0_0_15px_rgba(244,63,94,0.25)] font-bold'
                     : 'bg-black/40 hover:bg-black/60 border-slate-700/60 text-slate-200 hover:border-pink-500'
@@ -33,7 +33,7 @@
             <button
             type="button"
             onClick={handleLogout}
-            className="h-10 flex items-center gap-1.5 px-3.5 text-xs font-semibold text-slate-300 hover:text-rose-400 bg-black/40 hover:bg-rose-950/40 border border-slate-700/50 rounded-xl transition cursor-pointer shadow-sm"
+            className="h-[34px] flex items-center gap-1.5 px-3.5 text-xs font-semibold text-slate-300 hover:text-rose-400 bg-black/40 hover:bg-rose-950/40 border border-slate-700/50 rounded-xl transition cursor-pointer shadow-sm"
             title="Log Out"
             >
             <LogOut size={16} />
