@@ -167,7 +167,7 @@ const handleSave = (e: React.FormEvent) => {
 
             <button
             type="submit"
-            className="inline-flex min-h-11 items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition active:scale-95 cursor-pointer"
+            className="inline-flex min-h-11 items-center gap-2 px-5 py-2.5 rounded-xl border border-pink-400/50 bg-pink-500/20 hover:bg-pink-500/30 text-pink-300 font-bold text-xs shadow-[0_0_15px_rgba(244,63,94,0.25)] transition active:scale-95 cursor-pointer"
             >
             <Save className="w-4 h-4" />
             Save Changes

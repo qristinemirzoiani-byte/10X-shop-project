@@ -9,7 +9,7 @@ export function ProfileOverview({ user, orderCount }: ProfileOverviewProps) {
     return (
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white font-black text-xl flex items-center justify-center uppercase shadow-md shadow-indigo-600/20">
+            <div className="w-14 h-14 rounded-2xl bg-pink-500/20 border border-pink-400/50 text-pink-300 font-black text-xl flex items-center justify-center uppercase shadow-[0_0_15px_rgba(244,63,94,0.25)]">
                 {(user.firstName || user.username).charAt(0) || 'U'}
             </div>
             <div>
@@ -19,9 +19,11 @@ export function ProfileOverview({ user, orderCount }: ProfileOverviewProps) {
                 Active Member
                 </span>
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-                {user.email || `${user.username}@example.com`}
-            </p>
+            {user.email && (
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {user.email}
+                </p>
+            )}
             </div>
         </div>
 

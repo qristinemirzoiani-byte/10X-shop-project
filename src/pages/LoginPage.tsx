@@ -41,7 +41,7 @@
         onSubmit: (values) => {
         setIsSubmitting(true);
         setTimeout(() => {
-            login(values.username);
+            login(values.username, isSignUp ? values.email : undefined);
             setIsSubmitting(false);
             navigate(from, { replace: true });
         }, 400);
